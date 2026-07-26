@@ -5,6 +5,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_windows_scripts_are_ascii_only() -> None:
+    scripts = (ROOT / "packaging" / "windows").glob("*.ps1")
+    for script in scripts:
+        assert script.read_text(encoding="utf-8").isascii()
+
+
 def test_project_surfaces_link_to_official_website() -> None:
     official_url = "https://monatendard.github.io/"
     paths = [

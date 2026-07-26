@@ -10,7 +10,7 @@ if ([string]::IsNullOrWhiteSpace($FontDirectory)) {
 $fontDirectoryPath = (Resolve-Path -LiteralPath $FontDirectory).Path
 $fontFiles = @(Get-ChildItem -LiteralPath $fontDirectoryPath -Filter 'MonatendardNFM-*.ttf' -File)
 if ($fontFiles.Count -eq 0) {
-    throw "설치할 Monatendard Nerd Font Mono TTF가 없습니다: $fontDirectoryPath"
+    throw "No Monatendard Nerd Font Mono TTF files were found to install: $fontDirectoryPath"
 }
 
 $userFontDirectory = Join-Path $env:LOCALAPPDATA 'Microsoft\Windows\Fonts'
@@ -40,7 +40,7 @@ foreach ($font in $fontFiles) {
         'MonatendardNFM-'.Length
     )
     $registryName = "Monatendard Nerd Font Mono $style (TrueType)"
-    if ($PSCmdlet.ShouldProcess($destination, '현재 사용자용 Nerd 글꼴 설치')) {
+    if ($PSCmdlet.ShouldProcess($destination, 'Install Nerd font for the current user')) {
         Copy-Item -LiteralPath $font.FullName -Destination $destination -Force
         New-ItemProperty `
             -Path $fontRegistry `
@@ -52,7 +52,7 @@ foreach ($font in $fontFiles) {
             $destination, 0, [IntPtr]::Zero
         )
         if ($loaded -eq 0) {
-            throw "Windows 세션에 Nerd 글꼴을 등록하지 못했습니다: $destination"
+            throw "Failed to load the Nerd font into the current Windows session: $destination"
         }
     }
 }
@@ -65,5 +65,5 @@ if (-not $WhatIfPreference) {
     )
 }
 
-Write-Host "Monatendard Nerd Font Mono $($fontFiles.Count)개 파일 설치를 완료했습니다."
-Write-Host '편집기와 터미널을 다시 시작해 주세요.'
+Write-Host "Monatendard Nerd Font Mono: Installed $($fontFiles.Count) font files successfully."
+Write-Host 'Please restart your editor and terminal.'

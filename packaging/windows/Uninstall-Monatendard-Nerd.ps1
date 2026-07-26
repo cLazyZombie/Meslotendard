@@ -29,7 +29,7 @@ if (Test-Path -LiteralPath $fontRegistry) {
         if ($property.Name -like 'PS*' -or $fileName -notlike 'MonatendardNFM-*.ttf') {
             continue
         }
-        if ($PSCmdlet.ShouldProcess($property.Name, '현재 사용자 Nerd 글꼴 등록 제거')) {
+        if ($PSCmdlet.ShouldProcess($property.Name, 'Remove current-user Nerd font registry entry')) {
             Remove-ItemProperty -LiteralPath $fontRegistry -Name $property.Name
         }
     }
@@ -40,7 +40,7 @@ if (Test-Path -LiteralPath $userFontDirectory) {
         Get-ChildItem -LiteralPath $userFontDirectory -Filter 'MonatendardNFM-*.ttf' -File
     )
     foreach ($font in $fontFiles) {
-        if ($PSCmdlet.ShouldProcess($font.FullName, '현재 사용자 Nerd 글꼴 파일 제거')) {
+        if ($PSCmdlet.ShouldProcess($font.FullName, 'Remove current-user Nerd font file')) {
             [void][MonatendardNerdFontApi]::RemoveFontResourceEx(
                 $font.FullName, 0, [IntPtr]::Zero
             )
@@ -58,5 +58,5 @@ if (-not $WhatIfPreference) {
     )
 }
 
-Write-Host "Monatendard Nerd Font Mono 제거를 완료했습니다. 제거한 파일: $removed"
-Write-Host '편집기와 터미널을 다시 시작해 주세요.'
+Write-Host "Monatendard Nerd Font Mono: Uninstallation completed. Removed font files: $removed"
+Write-Host 'Please restart your editor and terminal.'

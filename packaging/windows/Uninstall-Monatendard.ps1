@@ -29,7 +29,7 @@ if (Test-Path -LiteralPath $fontRegistry) {
         if ($property.Name -like 'PS*' -or $fileName -notlike 'Monatendard-*.ttf') {
             continue
         }
-        if ($PSCmdlet.ShouldProcess($property.Name, '현재 사용자 글꼴 등록 제거')) {
+        if ($PSCmdlet.ShouldProcess($property.Name, 'Remove current-user font registry entry')) {
             Remove-ItemProperty -LiteralPath $fontRegistry -Name $property.Name
         }
     }
@@ -38,7 +38,7 @@ if (Test-Path -LiteralPath $fontRegistry) {
 if (Test-Path -LiteralPath $userFontDirectory) {
     $fontFiles = @(Get-ChildItem -LiteralPath $userFontDirectory -Filter 'Monatendard-*.ttf' -File)
     foreach ($font in $fontFiles) {
-        if ($PSCmdlet.ShouldProcess($font.FullName, '현재 사용자 글꼴 파일 제거')) {
+        if ($PSCmdlet.ShouldProcess($font.FullName, 'Remove current-user font file')) {
             [void][MonatendardFontApi]::RemoveFontResourceEx(
                 $font.FullName, 0, [IntPtr]::Zero
             )
@@ -56,5 +56,5 @@ if (-not $WhatIfPreference) {
     )
 }
 
-Write-Host "Monatendard 제거를 완료했습니다. 제거한 파일: $removed"
-Write-Host '편집기와 터미널을 다시 시작해 주세요.'
+Write-Host "Monatendard: Uninstallation completed. Removed font files: $removed"
+Write-Host 'Please restart your editor and terminal.'
