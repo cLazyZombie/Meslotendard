@@ -12,6 +12,16 @@ for mixed Korean and Latin code: every Hangul character occupies exactly two
 Latin cells, with spacing that stays readable without feeling unnecessarily
 wide.
 
+<p align="center">
+  <img src="assets/codex-cli-preview.png"
+       alt="Monatendard Nerd Font Mono rendering aligned Korean, Latin, ligatures, and Nerd Font glyphs in Codex CLI"
+       width="900">
+</p>
+
+<p align="center">
+  <sub>Monatendard Nerd Font Mono in Codex CLI on Windows Terminal</sub>
+</p>
+
 ## Highlights
 
 - Monaspace Neon 1.400 Latin glyphs, horizontally tuned to 92.5%
