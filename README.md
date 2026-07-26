@@ -38,6 +38,19 @@ For Windows:
 The installer works per user and does not require administrator privileges.
 Matching uninstall scripts are included in each package.
 
+### VS Code
+
+Open **Settings (JSON)** and add:
+
+```json
+{
+  "editor.fontFamily": "Monatendard, Consolas, monospace",
+  "editor.fontLigatures": true
+}
+```
+
+Restart VS Code after installing the font.
+
 TTF files can also be installed manually on macOS and Linux. Automated
 installers for those platforms are planned for a future release.
 
