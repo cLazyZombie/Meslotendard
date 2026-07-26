@@ -18,6 +18,7 @@ from monatendard.nerd import (
     CENTERED_NERD_CODEPOINTS,
     NERD_FAMILY_NAME,
     NERD_FILE_PREFIX,
+    NERD_ICON_VERTICAL_OFFSET_EM,
     REQUIRED_NERD_CODEPOINTS,
     build_nerd_font,
 )
@@ -135,7 +136,10 @@ def verify_nerd_font(path: Path) -> list[str]:
         if reference_bounds is None:
             errors.append("Nerd 아이콘 세로 중심 기준인 소문자 x를 읽을 수 없습니다.")
         else:
-            reference_center = (reference_bounds[1] + reference_bounds[3]) / 2
+            reference_center = (
+                (reference_bounds[1] + reference_bounds[3]) / 2
+                + font["head"].unitsPerEm * NERD_ICON_VERTICAL_OFFSET_EM
+            )
             for codepoint in CENTERED_NERD_CODEPOINTS:
                 glyph_name = cmap.get(codepoint)
                 bounds = (

@@ -3,6 +3,7 @@ from __future__ import annotations
 from monatendard.nerd import (
     NERD_FAMILY_NAME,
     NERD_FILE_PREFIX,
+    NERD_ICON_VERTICAL_OFFSET_EM,
     REQUIRED_NERD_CODEPOINTS,
     _vertical_center_shift,
     is_private_use,
@@ -23,10 +24,10 @@ def test_required_prompt_icons_are_private_use_codepoints() -> None:
     assert not is_private_use(0xAC00)
 
 
-def test_nerd_icon_vertical_center_is_aligned_after_scaling() -> None:
+def test_nerd_icon_vertical_center_uses_optical_offset_above_x_height() -> None:
     bounds = (1, -182, 2049, 1410)
     scale = 1101 / 2048
-    target_center = 513.5
+    target_center = 513.5 + 2000 * NERD_ICON_VERTICAL_OFFSET_EM
     shift = _vertical_center_shift(bounds, scale=scale, target_center=target_center)
     transformed_center = ((bounds[1] + bounds[3]) / 2) * scale + shift
     assert transformed_center == target_center

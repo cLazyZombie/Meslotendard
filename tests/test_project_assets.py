@@ -54,4 +54,5 @@ def test_nerd_windows_scripts_are_isolated_from_standard_family() -> None:
         assert "MonatendardNFM-*.ttf" in script
         assert "Monatendard Nerd Font Mono" in script
     assert "-Value $destination" in installer
+    assert "RemoveFontResourceEx" in installer
     assert "GetFileName([string]$property.Value)" in uninstaller

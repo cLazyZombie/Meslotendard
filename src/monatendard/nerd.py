@@ -32,6 +32,7 @@ NERD_FAMILY_NAME = "Monatendard Nerd Font Mono"
 NERD_FILE_PREFIX = "MonatendardNFM"
 DEFAULT_NERD_OUTPUT_DIR = DEFAULT_OUTPUT_DIR / "nerd-ttf"
 DEFAULT_STANDARD_INPUT_DIR = DEFAULT_OUTPUT_DIR / "ttf"
+NERD_ICON_VERTICAL_OFFSET_EM = 0.025
 REQUIRED_NERD_CODEPOINTS = (
     0xE0A0,
     0xE0B0,
@@ -102,11 +103,14 @@ def merge_nerd_symbols(font: TTFont, symbols_font: TTFont, latin_advance: int) -
     )
     if reference_bounds is None:
         raise ValueError("Nerd 아이콘 세로 중심 기준인 소문자 x를 읽을 수 없습니다.")
-    target_center_y = (reference_bounds[1] + reference_bounds[3]) / 2
+    units_per_em = cast("Any", font["head"]).unitsPerEm
+    target_center_y = (
+        (reference_bounds[1] + reference_bounds[3]) / 2
+        + units_per_em * NERD_ICON_VERTICAL_OFFSET_EM
+    )
     safe_ymin, safe_ymax = _safe_vertical_bounds(font)
     normalized_scale = (
-        cast("Any", font["head"]).unitsPerEm
-        / cast("Any", symbols_font["head"]).unitsPerEm
+        units_per_em / cast("Any", symbols_font["head"]).unitsPerEm
     )
 
     mapped = 0

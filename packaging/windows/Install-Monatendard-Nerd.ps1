@@ -26,6 +26,9 @@ public static class MonatendardNerdFontApi {
     [DllImport("gdi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     public static extern int AddFontResourceEx(string fileName, uint flags, IntPtr reserved);
 
+    [DllImport("gdi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    public static extern bool RemoveFontResourceEx(string fileName, uint flags, IntPtr reserved);
+
     [DllImport("user32.dll", SetLastError = true)]
     public static extern IntPtr SendMessageTimeout(
         IntPtr hWnd, uint Msg, UIntPtr wParam, IntPtr lParam,
@@ -41,6 +44,12 @@ foreach ($font in $fontFiles) {
     )
     $registryName = "Monatendard Nerd Font Mono $style (TrueType)"
     if ($PSCmdlet.ShouldProcess($destination, 'Install Nerd font for the current user')) {
+        while (
+            (Test-Path -LiteralPath $destination) -and
+            [MonatendardNerdFontApi]::RemoveFontResourceEx(
+                $destination, 0, [IntPtr]::Zero
+            )
+        ) {}
         Copy-Item -LiteralPath $font.FullName -Destination $destination -Force
         New-ItemProperty `
             -Path $fontRegistry `
