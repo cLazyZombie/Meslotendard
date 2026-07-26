@@ -7,7 +7,20 @@ from pathlib import Path
 
 from fontTools.ttLib import TTFont
 
-from monatendard.builder import ASCII_SAMPLE, FAMILY_NAME, REQUIRED_HANGUL, build_font
+from monatendard.builder import (
+    ASCII_SAMPLE,
+    FAMILY_NAME,
+    REQUIRED_HANGUL,
+    _glyph_bounds,
+    build_font,
+)
+from monatendard.nerd import (
+    CENTERED_NERD_CODEPOINTS,
+    NERD_FAMILY_NAME,
+    NERD_FILE_PREFIX,
+    REQUIRED_NERD_CODEPOINTS,
+    build_nerd_font,
+)
 from monatendard.sources import VARIANTS_BY_SUFFIX
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -86,17 +99,79 @@ def verify_font(path: Path) -> list[str]:
     return errors
 
 
+def verify_nerd_font(path: Path) -> list[str]:
+    """일반 글꼴 규칙과 Nerd 전용 패밀리·아이콘·폭을 함께 검사한다."""
+    errors = verify_font(path)
+    try:
+        font = TTFont(path)
+        font.ensureDecompiled()
+    except Exception as exc:
+        return errors or [f"글꼴을 열 수 없습니다: {exc}"]
+
+    try:
+        families = _name_values(font, 16) or _name_values(font, 1)
+        if families != {NERD_FAMILY_NAME}:
+            errors.append(f"Nerd 패밀리 이름이 다릅니다: {sorted(families)}")
+
+        cmap = font.getBestCmap() or {}
+        hmtx = font["hmtx"].metrics
+        ascii_glyph = cmap.get(ord("A"))
+        latin_advance = hmtx[ascii_glyph][0] if ascii_glyph in hmtx else None
+        for codepoint in REQUIRED_NERD_CODEPOINTS:
+            glyph_name = cmap.get(codepoint)
+            if glyph_name is None:
+                errors.append(f"필수 Nerd 아이콘 누락: U+{codepoint:04X}")
+            elif latin_advance is not None and hmtx[glyph_name][0] != latin_advance:
+                errors.append(
+                    f"U+{codepoint:04X} advance={hmtx[glyph_name][0]}, "
+                    f"expected={latin_advance}"
+                )
+
+        glyph_set = font.getGlyphSet()
+        reference_name = cmap.get(ord("x"))
+        reference_bounds = (
+            _glyph_bounds(glyph_set, reference_name) if reference_name is not None else None
+        )
+        if reference_bounds is None:
+            errors.append("Nerd 아이콘 세로 중심 기준인 소문자 x를 읽을 수 없습니다.")
+        else:
+            reference_center = (reference_bounds[1] + reference_bounds[3]) / 2
+            for codepoint in CENTERED_NERD_CODEPOINTS:
+                glyph_name = cmap.get(codepoint)
+                bounds = (
+                    _glyph_bounds(glyph_set, glyph_name) if glyph_name is not None else None
+                )
+                if bounds is None:
+                    continue
+                center = (bounds[1] + bounds[3]) / 2
+                if abs(center - reference_center) > 2:
+                    errors.append(
+                        f"U+{codepoint:04X} 세로 중심={center:g}, "
+                        f"expected={reference_center:g}"
+                    )
+
+        licenses = _name_values(font, 13)
+        if not any("MIT License" in value for value in licenses):
+            errors.append("name ID 13에 Nerd Fonts MIT 고지가 없습니다.")
+    finally:
+        font.close()
+    return errors
+
+
 def cast_fixed_pitch(font: TTFont) -> bool:
     """일반적인 두 고정폭 플래그가 모두 설정됐는지 확인한다."""
     return bool(font["post"].isFixedPitch) and font["OS/2"].panose.bProportion == 9
 
 
-def verify_directory(font_dir: Path) -> dict[Path, list[str]]:
+def verify_directory(font_dir: Path, *, nerd: bool = False) -> dict[Path, list[str]]:
     """디렉터리의 모든 TTF를 검사한다."""
-    paths = sorted(font_dir.glob("Monatendard-*.ttf"))
+    pattern = f"{NERD_FILE_PREFIX}-*.ttf" if nerd else "Monatendard-*.ttf"
+    verifier = verify_nerd_font if nerd else verify_font
+    paths = sorted(font_dir.glob(pattern))
     if not paths:
-        return {font_dir: ["검사할 Monatendard TTF가 없습니다."]}
-    return {path: errors for path in paths if (errors := verify_font(path))}
+        label = "Monatendard Nerd" if nerd else "Monatendard"
+        return {font_dir: [f"검사할 {label} TTF가 없습니다."]}
+    return {path: errors for path in paths if (errors := verifier(path))}
 
 
 def verify_reproducible(variant_name: str = "Regular") -> tuple[bool, str, str]:
@@ -113,6 +188,25 @@ def verify_reproducible(variant_name: str = "Regular") -> tuple[bool, str, str]:
         root = Path(temporary)
         first = build_font(variant, output_dir=root / "first").output_path
         second = build_font(variant, output_dir=root / "second").output_path
+        first_hash = sha256(first)
+        second_hash = sha256(second)
+    return first_hash == second_hash, first_hash, second_hash
+
+
+def verify_nerd_reproducible(variant_name: str = "Regular") -> tuple[bool, str, str]:
+    """같은 일반판 입력에서 Nerd TTF를 두 번 만들어 SHA256을 비교한다."""
+    from monatendard.sources import sha256
+
+    variant = VARIANTS_BY_SUFFIX[variant_name]
+    temporary_root = PROJECT_ROOT / "build"
+    temporary_root.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(
+        prefix="monatendard-nerd-repro-",
+        dir=temporary_root,
+    ) as temporary:
+        root = Path(temporary)
+        first = build_nerd_font(variant, output_dir=root / "first").output_path
+        second = build_nerd_font(variant, output_dir=root / "second").output_path
         first_hash = sha256(first)
         second_hash = sha256(second)
     return first_hash == second_hash, first_hash, second_hash

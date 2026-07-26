@@ -26,6 +26,8 @@ jobs:
       - run: uv run monatendard fetch
       - run: uv run monatendard build --all
       - run: uv run monatendard verify --reproducible
+      - run: uv run monatendard build-nerd --all
+      - run: uv run monatendard verify --nerd --reproducible
       - name: 버전 결정
         id: version
         shell: bash

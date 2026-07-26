@@ -19,3 +19,5 @@ jobs:
       - run: uv run monatendard fetch
       - run: uv run monatendard build --variants Regular
       - run: uv run monatendard verify --reproducible
+      - run: uv run monatendard build-nerd --variants Regular
+      - run: uv run monatendard verify --nerd --reproducible

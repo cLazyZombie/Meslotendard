@@ -40,6 +40,7 @@ def test_lock_pins_required_versions_scale_and_sha256() -> None:
     assert lock["project"]["latin_horizontal_scale"] == 0.925
     assert lock["sources"]["monaspace"]["version"] == "1.400"
     assert lock["sources"]["pretendard"]["version"] == "1.3.9"
+    assert lock["sources"]["nerd_fonts"]["version"] == "3.4.0"
     for source in lock["sources"].values():
         assert len(source["sha256"]) == 64
         int(source["sha256"], 16)

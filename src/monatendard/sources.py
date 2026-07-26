@@ -16,6 +16,8 @@ UPSTREAM_DIR = PROJECT_ROOT / "upstream"
 ARCHIVE_DIR = UPSTREAM_DIR / "_archives"
 MONASPACE_DIR = UPSTREAM_DIR / "monaspace"
 PRETENDARD_DIR = UPSTREAM_DIR / "pretendard"
+NERD_FONTS_DIR = UPSTREAM_DIR / "nerd-fonts"
+NERD_SYMBOLS_FILENAME = "SymbolsNerdFontMono-Regular.ttf"
 
 WEIGHTS = ("ExtraLight", "Light", "Regular", "Medium", "SemiBold", "Bold", "ExtraBold")
 STYLES = ("normal", "italic")
@@ -129,8 +131,12 @@ def _extract_member(archive: zipfile.ZipFile, member_name: str, destination: Pat
         shutil.copyfileobj(source, target)
 
 
-def extract_sources(monaspace_archive: Path, pretendard_archive: Path) -> None:
-    """빌드에 필요한 14개 Monaspace와 7개 Pretendard TTF만 추출한다."""
+def extract_sources(
+    monaspace_archive: Path,
+    pretendard_archive: Path,
+    nerd_fonts_archive: Path,
+) -> None:
+    """빌드에 필요한 원본 TTF와 Nerd Fonts 고지를 추출한다."""
     with zipfile.ZipFile(monaspace_archive) as archive:
         for variant in VARIANTS:
             member = f"Frozen Fonts/Monaspace Neon/{variant.latin_filename}"
@@ -145,17 +151,27 @@ def extract_sources(monaspace_archive: Path, pretendard_archive: Path) -> None:
                 PRETENDARD_DIR / filename,
             )
 
+    with zipfile.ZipFile(nerd_fonts_archive) as archive:
+        _extract_member(
+            archive,
+            NERD_SYMBOLS_FILENAME,
+            NERD_FONTS_DIR / NERD_SYMBOLS_FILENAME,
+        )
+        _extract_member(archive, "LICENSE", NERD_FONTS_DIR / "LICENSE")
+
 
 def write_sources_note(lock: dict) -> None:
     """현재 추출된 입력과 변환 기준을 사람이 읽을 수 있게 기록한다."""
     project = lock["project"]
     monaspace = lock["sources"]["monaspace"]
     pretendard = lock["sources"]["pretendard"]
+    nerd_fonts = lock["sources"]["nerd_fonts"]
     lines = [
         "# Monatendard 빌드 입력",
         "",
         f"- Monaspace Neon: {monaspace['version']}",
         f"- Pretendard: {pretendard['version']}",
+        f"- Nerd Fonts Symbols Only: {nerd_fonts['version']}",
         f"- 영문 가로 배율: {project['latin_horizontal_scale']:.3f}",
         "- 무결성 기준: 저장소 루트 `sources.lock.toml`",
         "",
@@ -169,7 +185,7 @@ def fetch_sources(lock_path: Path = LOCK_PATH) -> list[Path]:
     """잠금된 원본을 준비하고 검증한다. 유효한 로컬 아카이브는 다시 받지 않는다."""
     lock = load_lock(lock_path)
     archives: list[Path] = []
-    for key in ("monaspace", "pretendard"):
+    for key in ("monaspace", "pretendard", "nerd_fonts"):
         source = lock["sources"][key]
         archive_path = ARCHIVE_DIR / source["archive"]
         if archive_path.exists():
@@ -182,6 +198,6 @@ def fetch_sources(lock_path: Path = LOCK_PATH) -> list[Path]:
         verify_archive(archive_path, source["sha256"])
         archives.append(archive_path)
 
-    extract_sources(archives[0], archives[1])
+    extract_sources(archives[0], archives[1], archives[2])
     write_sources_note(lock)
     return archives

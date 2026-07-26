@@ -129,11 +129,15 @@ def _redraw_scaled_glyph(
     scale_x: float,
     scale_y: float,
     shift_x: float = 0,
+    shift_y: float = 0,
 ) -> Any:
     recording = DecomposingRecordingPen(source_glyph_set)
     source_glyph_set[glyph_name].draw(recording)
     target_pen = TTGlyphPen(None)
-    transform_pen = TransformPen(target_pen, (scale_x, 0, 0, scale_y, shift_x, 0))
+    transform_pen = TransformPen(
+        target_pen,
+        (scale_x, 0, 0, scale_y, shift_x, shift_y),
+    )
     recording.replay(transform_pen)
     return target_pen.glyph()
 

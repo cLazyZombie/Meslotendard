@@ -9,6 +9,10 @@ Monatendard는 **Monaspace Neon 1.400의 영문 폭을 92.5%로 조정**하고
 일반 사용자는 공식 사이트의 `Monatendard-v*-Desktop.zip`만 내려받아 압축을 풀고
 `Install-Monatendard.ps1`을 실행하면 됩니다. Python, uv, Make는 필요하지 않습니다.
 
+Oh My Posh 같은 터미널 아이콘이 필요하면 일반판 대신
+`Monatendard-v*-Desktop-Nerd.zip`을 설치하고 글꼴을
+`Monatendard Nerd Font Mono`로 선택하세요. 일반판과 별도 패밀리라 함께 설치할 수 있습니다.
+
 ## 일반 사용자 설치
 
 1. [공식 사이트](https://monatendard.github.io/#download)의 Desktop ZIP을 내려받아 압축을 풉니다.
@@ -27,23 +31,29 @@ uv sync --all-groups
 uv run monatendard fetch
 uv run monatendard build --variants Regular
 uv run monatendard verify
+uv run monatendard build-nerd --variants Regular
+uv run monatendard verify --nerd
 ```
 
 전체 14개 weight/style 조합은 다음 명령으로 빌드합니다.
 
 ```powershell
 uv run monatendard build --all
+uv run monatendard build-nerd --all
 ```
 
-생성 파일은 `fonts/ttf`, `fonts/webfont`에 저장되며 Git에는 포함되지 않습니다.
+생성 파일은 `fonts/ttf`, `fonts/nerd-ttf`, `fonts/webfont`에 저장되며
+Git에는 포함되지 않습니다.
 원본 아카이브도 `upstream/` 아래에만 저장되고 Git에서 제외됩니다.
 
 ## 명령
 
 - `monatendard fetch`: 잠금 파일의 URL에서 원본을 받고 SHA256을 확인합니다.
 - `monatendard build`: 92.5% 변환과 Pretendard 글리프 병합을 수행합니다.
+- `monatendard build-nerd`: 일반판에 고정된 Nerd Fonts Symbols Only 아이콘을 병합합니다.
 - `monatendard verify`: 이름, 폭, 한글 글리프, 리게이처, 테이블 무결성을 확인합니다.
-- `monatendard package --version 0.1.0`: Desktop/Web ZIP과 체크섬을 만듭니다.
+- `monatendard verify --nerd`: Nerd 패밀리명, 필수 아이콘과 한 칸 폭을 추가 검사합니다.
+- `monatendard package --version 0.1.0`: Desktop/Desktop-Nerd/Web ZIP과 체크섬을 만듭니다.
 
 `Makefile`은 개발자용 단축 명령일 뿐이며 사용자 설치 과정에는 필요하지 않습니다.
 
@@ -54,6 +64,7 @@ uv run monatendard build --all
 | Monatendard | 0.1.0 |
 | Monaspace Neon | 1.400 |
 | Pretendard | 1.3.9 |
+| Nerd Fonts Symbols Only | 3.4.0 |
 | 영문 가로 배율 | 92.5% |
 | 한글 advance | 영문 2칸 |
 
@@ -70,6 +81,6 @@ uv run monatendard build --all
 
 ## 라이선스
 
-Monaspace와 Pretendard는 SIL Open Font License 1.1로 배포됩니다. Monatendard는 원본의
-Reserved Font Name을 사용하지 않는 별도 패밀리 이름입니다. 자세한 저작권과 고지는
-`licenses/`를 확인해 주세요.
+Monaspace와 Pretendard는 SIL Open Font License 1.1로, Nerd Fonts Symbols Only는
+MIT License로 배포됩니다. Monatendard는 원본의 Reserved Font Name을 사용하지 않는
+별도 패밀리 이름입니다. 자세한 저작권과 고지는 `licenses/`를 확인해 주세요.
