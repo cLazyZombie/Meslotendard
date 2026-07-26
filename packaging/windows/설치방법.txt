@@ -1,6 +1,8 @@
 Monatendard Windows 설치 방법
 =============================
 
+공식 소개·체험·다운로드: https://monatendard.github.io/
+
 설치
 1. ZIP을 원하는 폴더에 완전히 압축 해제합니다.
 2. Install-Monatendard.ps1을 마우스 오른쪽 버튼으로 눌러 PowerShell로 실행합니다.

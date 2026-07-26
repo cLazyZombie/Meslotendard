@@ -4,12 +4,14 @@ Monatendard는 **Monaspace Neon 1.400의 영문 폭을 92.5%로 조정**하고
 **Pretendard 1.3.9의 한글 글리프를 결합**한 재현 가능한 코딩 글꼴 프로젝트입니다.
 한글 한 글자의 advance는 영문 두 칸과 정확히 같습니다.
 
-일반 사용자는 GitHub Release의 `Monatendard-v*-Desktop.zip`만 내려받아 압축을 풀고
+공식 소개·체험·다운로드: [monatendard.github.io](https://monatendard.github.io/)
+
+일반 사용자는 공식 사이트의 `Monatendard-v*-Desktop.zip`만 내려받아 압축을 풀고
 `Install-Monatendard.ps1`을 실행하면 됩니다. Python, uv, Make는 필요하지 않습니다.
 
 ## 일반 사용자 설치
 
-1. Release의 Desktop ZIP을 내려받아 압축을 풉니다.
+1. [공식 사이트](https://monatendard.github.io/#download)의 Desktop ZIP을 내려받아 압축을 풉니다.
 2. PowerShell에서 `Install-Monatendard.ps1`을 실행합니다.
 3. 사용 중인 편집기나 터미널을 다시 시작하고 글꼴을 `Monatendard`로 선택합니다.
 4. 제거할 때는 같은 폴더의 `Uninstall-Monatendard.ps1`을 실행합니다.
@@ -41,7 +43,7 @@ uv run monatendard build --all
 - `monatendard fetch`: 잠금 파일의 URL에서 원본을 받고 SHA256을 확인합니다.
 - `monatendard build`: 92.5% 변환과 Pretendard 글리프 병합을 수행합니다.
 - `monatendard verify`: 이름, 폭, 한글 글리프, 리게이처, 테이블 무결성을 확인합니다.
-- `monatendard package --version 0.1.0`: Desktop/Web ZIP, 단일 specimen, 체크섬을 만듭니다.
+- `monatendard package --version 0.1.0`: Desktop/Web ZIP과 체크섬을 만듭니다.
 
 `Makefile`은 개발자용 단축 명령일 뿐이며 사용자 설치 과정에는 필요하지 않습니다.
 

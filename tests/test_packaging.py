@@ -24,7 +24,6 @@ def test_release_package_contains_installer_fonts_licenses_and_checksums(
     assert [path.name for path in assets] == [
         "Monatendard-v0.1.0-beta.1-Desktop.zip",
         "Monatendard-v0.1.0-beta.1-Web.zip",
-        "Monatendard-v0.1.0-beta.1-Specimen.html",
         "SHA256SUMS.txt",
     ]
 
@@ -37,8 +36,4 @@ def test_release_package_contains_installer_fonts_licenses_and_checksums(
     assert "LICENSES/LICENSE" in names
     assert "LICENSES/THIRD_PARTY_NOTICES.md" in names
 
-    specimen = assets[2].read_text(encoding="utf-8")
-    assert "__FONT_DATA__" not in specimen
-    assert "d29mZjI=" in specimen
-    assert "0.1.0-beta.1" in specimen
-    assert len(assets[3].read_text(encoding="ascii").splitlines()) == 3
+    assert len(assets[2].read_text(encoding="ascii").splitlines()) == 2

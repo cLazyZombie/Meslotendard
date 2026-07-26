@@ -9,6 +9,9 @@ dependencies = [
     "fonttools>=4.59.0",
 ]
 
+[project.urls]
+Homepage = "https://monatendard.github.io/"
+
 [project.scripts]
 monatendard = "monatendard.cli:main"
 

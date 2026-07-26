@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import base64
 import hashlib
 import shutil
 import tempfile
@@ -40,19 +39,6 @@ def _copy_licenses(destination: Path) -> None:
             shutil.copy2(path, destination / path.name)
 
 
-def _write_specimen(woff2_path: Path, destination: Path, version: str) -> None:
-    template = (PROJECT_ROOT / "specimen" / "Monatendard-Specimen.template.html").read_text(
-        encoding="utf-8"
-    )
-    font_data = base64.b64encode(woff2_path.read_bytes()).decode("ascii")
-    html = (
-        template.replace("__FONT_DATA__", font_data)
-        .replace("__MONATENDARD_VERSION__", version)
-        .replace("__BUILD_DATE__", "재현 가능 빌드")
-    )
-    destination.write_text(html, encoding="utf-8")
-
-
 def _file_sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -67,7 +53,7 @@ def create_release_assets(
     fonts_dir: Path = Path("fonts"),
     dist_dir: Path = Path("dist"),
 ) -> list[Path]:
-    """Desktop/Web ZIP, specimen, SHA256SUMS를 생성한다."""
+    """Desktop/Web ZIP과 SHA256SUMS를 생성한다."""
     normalized_version = version.removeprefix("v")
     ttf_paths = sorted((fonts_dir / "ttf").glob(f"{FAMILY_NAME}-*.ttf"))
     woff2_paths = sorted((fonts_dir / "webfont").glob(f"{FAMILY_NAME}-*.woff2"))
@@ -78,7 +64,6 @@ def create_release_assets(
     prefix = f"{FAMILY_NAME}-v{normalized_version}"
     desktop_zip = dist_dir / f"{prefix}-Desktop.zip"
     web_zip = dist_dir / f"{prefix}-Web.zip"
-    specimen_path = dist_dir / f"{prefix}-Specimen.html"
 
     temporary_root = PROJECT_ROOT / "build"
     temporary_root.mkdir(parents=True, exist_ok=True)
@@ -112,10 +97,7 @@ def create_release_assets(
         _zip_directory(desktop, desktop_zip)
         _zip_directory(web, web_zip)
 
-    regular_webfont = fonts_dir / "webfont" / f"{FAMILY_NAME}-Regular.woff2"
-    _write_specimen(regular_webfont, specimen_path, normalized_version)
-
-    assets = [desktop_zip, web_zip, specimen_path]
+    assets = [desktop_zip, web_zip]
     checksums = dist_dir / "SHA256SUMS.txt"
     checksums.write_text(
         "".join(f"{_file_sha256(path)}  {path.name}\n" for path in assets),
