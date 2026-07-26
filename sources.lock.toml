@@ -1,0 +1,19 @@
+[project]
+version = "0.1.0"
+family = "Monatendard"
+latin_horizontal_scale = 0.925
+
+[sources.monaspace]
+name = "Monaspace Neon Frozen"
+version = "1.400"
+archive = "monaspace-frozen-v1.400.zip"
+url = "https://github.com/githubnext/monaspace/releases/download/v1.400/monaspace-frozen-v1.400.zip"
+sha256 = "f4a846421d1d6bb1233e5cb748d2afb85c7111b3da994a200504eaffd97a3a05"
+license = "SIL Open Font License 1.1"
+[sources.pretendard]
+name = "Pretendard"
+version = "1.3.9"
+archive = "Pretendard-1.3.9.zip"
+url = "https://github.com/orioncactus/pretendard/releases/download/v1.3.9/Pretendard-1.3.9.zip"
+sha256 = "04be351a74d6bf7d60c480a3087e51d185485d35a52023142af1df19eb8c428a"
+license = "SIL Open Font License 1.1"

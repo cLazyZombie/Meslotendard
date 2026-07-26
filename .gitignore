@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest_tmp/
+.ruff_cache/
+.venv/
+build/
+dist/
+fonts/
+upstream/
+*.log
+*.zip
+*.woff2
+*.ttf
+*.otf
+SHA256SUMS.txt

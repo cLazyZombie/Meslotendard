@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test-and-smoke-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --all-groups --frozen
+      - run: uv run ruff check .
+      - run: uv run pytest
+      - run: uv run monatendard fetch
+      - run: uv run monatendard build --variants Regular
+      - run: uv run monatendard verify --reproducible
