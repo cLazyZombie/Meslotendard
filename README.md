@@ -78,6 +78,21 @@ uv run monatendard build-nerd --all
 uv run monatendard verify --nerd --reproducible
 ```
 
+### How Monatendard is built
+
+1. Pin the Monaspace Neon Frozen, Pretendard, and Nerd Fonts sources and verify
+   their SHA256 checksums.
+2. Scale the Monaspace glyph outlines and Latin cell width horizontally to
+   92.5%.
+3. Merge Pretendard Hangul and CJK glyphs into cells exactly twice the Latin
+   width.
+4. Set the Monatendard family, style, fixed-pitch, version, and license
+   metadata.
+5. Generate desktop TTF files, web WOFF2 files, and `@font-face` CSS.
+6. Optionally merge Nerd Fonts Symbols Only icons into single-width cells.
+7. Verify glyph coverage, cell widths, ligatures, font metadata, and
+   reproducible output before packaging.
+
 See the [Korean README](README.ko.md) for the complete build, packaging, and
 release workflow.
 

@@ -46,6 +46,16 @@ uv run monatendard build-nerd --all
 Git에는 포함되지 않습니다.
 원본 아카이브도 `upstream/` 아래에만 저장되고 Git에서 제외됩니다.
 
+### Monatendard 생성 과정
+
+1. Monaspace Neon Frozen, Pretendard, Nerd Fonts 원본 버전을 고정하고 SHA256을 확인합니다.
+2. Monaspace 글리프 윤곽과 영문 셀을 가로 92.5%로 조정합니다.
+3. Pretendard 한글·CJK 글리프를 영문 두 칸 너비의 셀에 병합합니다.
+4. Monatendard 패밀리명, 스타일, 고정폭, 버전 및 라이선스 정보를 설정합니다.
+5. 데스크톱용 TTF, 웹용 WOFF2 및 `@font-face` CSS를 생성합니다.
+6. 선택적으로 Nerd Fonts Symbols Only 아이콘을 영문 한 칸 너비로 병합합니다.
+7. 글리프 범위, 셀 너비, 리게이처, 글꼴 정보와 빌드 재현성을 검증한 뒤 패키징합니다.
+
 ## 명령
 
 - `monatendard fetch`: 잠금 파일의 URL에서 원본을 받고 SHA256을 확인합니다.
