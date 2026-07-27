@@ -24,7 +24,7 @@ wide.
 
 ## Highlights
 
-- Monaspace Neon 1.400 Latin glyphs, horizontally tuned to 92.5%
+- Monaspace Neon 1.400 Latin outlines scaled to 92.5% in 0.595em cells
 - Pretendard 1.3.9 Korean glyphs with an exact 1:2 Latin-to-Hangul cell ratio
 - Balanced Korean spacing for comfortable reading in code and comments
 - 14 styles across seven weights, with matching italics
@@ -82,10 +82,10 @@ uv run monatendard verify --nerd --reproducible
 
 1. Pin the Monaspace Neon Frozen, Pretendard, and Nerd Fonts sources and verify
    their SHA256 checksums.
-2. Scale the Monaspace glyph outlines and Latin cell width horizontally to
-   92.5%.
-3. Merge Pretendard Hangul and CJK glyphs into cells exactly twice the Latin
-   width.
+2. Scale the Monaspace glyph outlines horizontally to 92.5% and center them in
+   0.595em Latin cells.
+3. Scale Pretendard Hangul and CJK glyphs to 112% horizontally and 108%
+   vertically, then merge them into cells exactly twice the Latin width.
 4. Set the Monatendard family, style, fixed-pitch, version, and license
    metadata.
 5. Generate desktop TTF files, web WOFF2 files, and `@font-face` CSS.

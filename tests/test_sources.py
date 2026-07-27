@@ -38,6 +38,9 @@ def test_unknown_variant_values_are_rejected() -> None:
 def test_lock_pins_required_versions_scale_and_sha256() -> None:
     lock = load_lock()
     assert lock["project"]["latin_horizontal_scale"] == 0.925
+    assert lock["project"]["latin_advance_em"] == 0.595
+    assert lock["project"]["cjk_horizontal_scale"] == 1.12
+    assert lock["project"]["cjk_vertical_scale"] == 1.08
     assert lock["sources"]["monaspace"]["version"] == "1.400"
     assert lock["sources"]["pretendard"]["version"] == "1.3.9"
     assert lock["sources"]["nerd_fonts"]["version"] == "3.4.0"

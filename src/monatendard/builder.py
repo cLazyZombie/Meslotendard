@@ -142,21 +142,49 @@ def _redraw_scaled_glyph(
     return target_pen.glyph()
 
 
-def scale_latin_horizontally(font: TTFont, pristine_font: TTFont, scale: float) -> int:
-    """모든 Monaspace 윤곽과 advance를 가로 방향으로 동일하게 축소한다."""
-    if not 0 < scale <= 1:
-        raise ValueError(f"가로 배율은 0보다 크고 1 이하여야 합니다: {scale}")
+def _fit_latin_metrics(
+    advance: int,
+    left_side_bearing: int,
+    *,
+    outline_scale: float,
+    advance_scale: float,
+) -> tuple[int, int, float]:
+    target_advance = round(advance * advance_scale)
+    shift_x = (target_advance - round(advance * outline_scale)) / 2
+    return target_advance, round(left_side_bearing * outline_scale + shift_x), shift_x
+
+
+def scale_latin_horizontally(
+    font: TTFont,
+    pristine_font: TTFont,
+    outline_scale: float,
+    advance_em: float,
+) -> int:
+    """Monaspace 윤곽을 축소하고 지정한 advance 안에 중앙 정렬한다."""
+    if not 0 < outline_scale <= 1:
+        raise ValueError(f"가로 배율은 0보다 크고 1 이하여야 합니다: {outline_scale}")
+    if not 0 < advance_em <= 1:
+        raise ValueError(f"영문 advance는 0em보다 크고 1em 이하여야 합니다: {advance_em}")
 
     source_glyph_set = pristine_font.getGlyphSet()
+    source_hmtx = pristine_font["hmtx"]
     glyf = font["glyf"]
     hmtx = font["hmtx"]
+    source_advance = derive_monospace_advance(pristine_font)
+    target_advance = round(cast("Any", font["head"]).unitsPerEm * advance_em)
+    advance_scale = target_advance / source_advance
     for glyph_name in pristine_font.getGlyphOrder():
-        glyf[glyph_name] = _redraw_scaled_glyph(source_glyph_set, glyph_name, scale, 1.0)
-        advance, left_side_bearing = hmtx.metrics[glyph_name]
-        hmtx.metrics[glyph_name] = (
-            round(advance * scale),
-            round(left_side_bearing * scale),
+        advance, left_side_bearing = source_hmtx.metrics[glyph_name]
+        scaled_advance, scaled_lsb, shift_x = _fit_latin_metrics(
+            advance,
+            left_side_bearing,
+            outline_scale=outline_scale,
+            advance_scale=advance_scale,
         )
+        glyf[glyph_name] = _redraw_scaled_glyph(
+            source_glyph_set, glyph_name, outline_scale, 1.0, shift_x
+        )
+        hmtx.metrics[glyph_name] = (scaled_advance, scaled_lsb)
 
     for hint_table in ("fpgm", "prep", "cvt "):
         if hint_table in font:
@@ -214,6 +242,39 @@ def _fit_cjk_transform(
     return scale, shift_x
 
 
+def _fit_cjk_transform_xy(
+    bounds: tuple[float, float, float, float] | None,
+    *,
+    normalized_scale_x: float,
+    normalized_scale_y: float,
+    target_advance: int,
+    safe_ymin: int,
+    safe_ymax: int,
+) -> tuple[float, float, float]:
+    """두 영문 칸 안에서 CJK 윤곽의 가로·세로 배율을 따로 맞춘다."""
+    if bounds is None:
+        return normalized_scale_x, normalized_scale_y, 0
+
+    xmin, ymin, xmax, ymax = bounds
+    guard = max(8, round(target_advance * 0.02))
+    scale_x = normalized_scale_x
+    source_width = xmax - xmin
+    if source_width > 0:
+        scale_x = min(scale_x, (target_advance - guard * 2) / source_width)
+
+    scale_y = normalized_scale_y
+    if ymax > 0:
+        scale_y = min(scale_y, safe_ymax / ymax)
+    if ymin < 0 and safe_ymin < 0:
+        scale_y = min(scale_y, safe_ymin / ymin)
+    if scale_x <= 0 or scale_y <= 0:
+        raise ValueError(f"CJK 글리프를 셀에 맞출 수 없습니다: {bounds}")
+
+    center = ((xmin + xmax) / 2) * scale_x
+    shift_x = (target_advance / 2) - center
+    return scale_x, scale_y, shift_x
+
+
 def _update_unicode_cmaps(font: TTFont, codepoint: int, glyph_name: str) -> None:
     for subtable in font["cmap"].tables:
         if subtable.format == 14 or not subtable.isUnicode():
@@ -222,8 +283,19 @@ def _update_unicode_cmaps(font: TTFont, codepoint: int, glyph_name: str) -> None
             subtable.cmap[codepoint] = glyph_name
 
 
-def merge_cjk(font: TTFont, cjk_font: TTFont, latin_advance: int) -> int:
+def merge_cjk(
+    font: TTFont,
+    cjk_font: TTFont,
+    latin_advance: int,
+    horizontal_scale: float,
+    vertical_scale: float,
+) -> int:
     """Pretendard의 한글/CJK 글리프를 정확히 두 영문 칸 advance로 복사한다."""
+    if horizontal_scale <= 0 or vertical_scale <= 0:
+        raise ValueError(
+            f"CJK 시각 배율은 0보다 커야 합니다: {horizontal_scale}, {vertical_scale}"
+        )
+
     cmap = cjk_font.getBestCmap()
     if not cmap:
         raise ValueError("Pretendard cmap을 읽을 수 없습니다.")
@@ -249,18 +321,21 @@ def merge_cjk(font: TTFont, cjk_font: TTFont, latin_advance: int) -> int:
             continue
         target_name = f"mduni{codepoint:04X}"
         source_bounds = _glyph_bounds(cjk_glyph_set, source_name)
-        scale, shift_x = _fit_cjk_transform(
+        scale_x, scale_y, shift_x = _fit_cjk_transform_xy(
             source_bounds,
-            normalized_scale=normalized_scale,
+            normalized_scale_x=normalized_scale * horizontal_scale,
+            normalized_scale_y=normalized_scale * vertical_scale,
             target_advance=target_advance,
             safe_ymin=safe_ymin,
             safe_ymax=safe_ymax,
         )
-        glyph = _redraw_scaled_glyph(cjk_glyph_set, source_name, scale, scale, shift_x)
+        glyph = _redraw_scaled_glyph(
+            cjk_glyph_set, source_name, scale_x, scale_y, shift_x
+        )
         target_glyf[target_name] = glyph
 
         left_side_bearing = (
-            round(source_bounds[0] * scale + shift_x) if source_bounds is not None else 0
+            round(source_bounds[0] * scale_x + shift_x) if source_bounds is not None else 0
         )
         target_hmtx.metrics[target_name] = (target_advance, left_side_bearing)
         _update_unicode_cmaps(font, codepoint, target_name)
@@ -356,6 +431,9 @@ def build_font(
     """한 variant를 TTF와 WOFF2로 생성한다."""
     lock = load_lock(LOCK_PATH)
     scale = horizontal_scale or float(lock["project"]["latin_horizontal_scale"])
+    latin_advance_em = float(lock["project"]["latin_advance_em"])
+    cjk_horizontal_scale = float(lock["project"]["cjk_horizontal_scale"])
+    cjk_vertical_scale = float(lock["project"]["cjk_vertical_scale"])
     version = project_version or str(lock["project"]["version"])
     latin_path = MONASPACE_DIR / variant.latin_filename
     cjk_path = PRETENDARD_DIR / variant.cjk_filename
@@ -369,8 +447,14 @@ def build_font(
     pristine = TTFont(latin_path, recalcTimestamp=False)
     cjk = TTFont(cjk_path, recalcTimestamp=False)
     try:
-        latin_advance = scale_latin_horizontally(target, pristine, scale)
-        copied = merge_cjk(target, cjk, latin_advance)
+        latin_advance = scale_latin_horizontally(target, pristine, scale, latin_advance_em)
+        copied = merge_cjk(
+            target,
+            cjk,
+            latin_advance,
+            cjk_horizontal_scale,
+            cjk_vertical_scale,
+        )
         update_metadata(target, variant, version)
         target.recalcTimestamp = False
 
