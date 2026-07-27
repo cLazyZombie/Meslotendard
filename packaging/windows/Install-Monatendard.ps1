@@ -16,7 +16,9 @@ if ($fontFiles.Count -eq 0) {
 $userFontDirectory = Join-Path $env:LOCALAPPDATA 'Microsoft\Windows\Fonts'
 $fontRegistry = 'HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts'
 New-Item -ItemType Directory -Force -Path $userFontDirectory | Out-Null
-New-Item -Force -Path $fontRegistry | Out-Null
+if (-not (Test-Path -LiteralPath $fontRegistry)) {
+    New-Item -Path $fontRegistry | Out-Null
+}
 
 if (-not $WhatIfPreference) {
     Add-Type -TypeDefinition @'

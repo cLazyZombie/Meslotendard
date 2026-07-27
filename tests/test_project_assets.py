@@ -56,3 +56,14 @@ def test_nerd_windows_scripts_are_isolated_from_standard_family() -> None:
     assert "-Value $destination" in installer
     assert "RemoveFontResourceEx" in installer
     assert "GetFileName([string]$property.Value)" in uninstaller
+
+
+def test_windows_installers_preserve_existing_font_registry_entries() -> None:
+    installers = [
+        ROOT / "packaging" / "windows" / "Install-Monatendard.ps1",
+        ROOT / "packaging" / "windows" / "Install-Monatendard-Nerd.ps1",
+    ]
+    for path in installers:
+        installer = path.read_text(encoding="utf-8")
+        assert "New-Item -Force -Path $fontRegistry" not in installer
+        assert "if (-not (Test-Path -LiteralPath $fontRegistry))" in installer
