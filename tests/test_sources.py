@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+from monatendard import __version__
 from monatendard.sources import (
     VARIANTS,
     VARIANTS_BY_SUFFIX,
@@ -37,6 +38,7 @@ def test_unknown_variant_values_are_rejected() -> None:
 
 def test_lock_pins_required_versions_scale_and_sha256() -> None:
     lock = load_lock()
+    assert lock["project"]["version"] == __version__ == "0.2.1"
     assert lock["project"]["latin_horizontal_scale"] == 0.925
     assert lock["project"]["latin_advance_em"] == 0.595
     assert lock["project"]["cjk_horizontal_scale"] == 1.12

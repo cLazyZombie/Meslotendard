@@ -29,6 +29,10 @@ DEFAULT_OUTPUT_DIR = Path("fonts")
 REPRODUCIBLE_TIMESTAMP = 2_082_844_800  # 1970-01-01, OpenType의 1904 epoch 기준
 ASCII_SAMPLE = tuple(ord(char) for char in " A0Hinmw")
 REQUIRED_HANGUL = (0x1100, 0x1161, 0x3131, 0x314F, 0xAC00, 0xD55C, 0xAE00, 0xD7A3)
+CELL_CONNECTING_RANGES = (
+    (0x2500, 0x259F),  # Box Drawing, Block Elements
+    (0xE0B0, 0xE0D4),  # Powerline separators and extra symbols
+)
 CHOSEONG_MAP = {
     0x1100: 0x3131,
     0x1101: 0x3132,
@@ -107,6 +111,11 @@ def is_cjk(codepoint: int) -> bool:
     )
 
 
+def is_cell_connecting(codepoint: int) -> bool:
+    """인접 셀의 윤곽과 끊김 없이 맞닿아야 하는 문자인지 판단한다."""
+    return any(start <= codepoint <= end for start, end in CELL_CONNECTING_RANGES)
+
+
 def derive_monospace_advance(font: TTFont) -> int:
     """대표 ASCII가 공유하는 advance를 구한다."""
     cmap = font.getBestCmap()
@@ -159,6 +168,8 @@ def scale_latin_horizontally(
     pristine_font: TTFont,
     outline_scale: float,
     advance_em: float,
+    *,
+    connecting_font: TTFont | None = None,
 ) -> int:
     """Monaspace 윤곽을 축소하고 지정한 advance 안에 중앙 정렬한다."""
     if not 0 < outline_scale <= 1:
@@ -168,21 +179,41 @@ def scale_latin_horizontally(
 
     source_glyph_set = pristine_font.getGlyphSet()
     source_hmtx = pristine_font["hmtx"]
+    connecting_source = connecting_font or pristine_font
+    connecting_glyph_set = connecting_source.getGlyphSet()
+    connecting_hmtx = connecting_source["hmtx"]
     glyf = font["glyf"]
     hmtx = font["hmtx"]
     source_advance = derive_monospace_advance(pristine_font)
     target_advance = round(cast("Any", font["head"]).unitsPerEm * advance_em)
     advance_scale = target_advance / source_advance
+    target_cmap = pristine_font.getBestCmap() or {}
+    connecting_cmap = connecting_source.getBestCmap() or {}
+    connecting_glyphs = {
+        target_name: connecting_cmap[codepoint]
+        for codepoint, target_name in target_cmap.items()
+        if is_cell_connecting(codepoint) and codepoint in connecting_cmap
+    }
     for glyph_name in pristine_font.getGlyphOrder():
-        advance, left_side_bearing = source_hmtx.metrics[glyph_name]
+        connecting_name = connecting_glyphs.get(glyph_name)
+        if connecting_name is None:
+            glyph_source_set = source_glyph_set
+            source_name = glyph_name
+            advance, left_side_bearing = source_hmtx.metrics[source_name]
+            glyph_outline_scale = outline_scale
+        else:
+            glyph_source_set = connecting_glyph_set
+            source_name = connecting_name
+            advance, left_side_bearing = connecting_hmtx.metrics[source_name]
+            glyph_outline_scale = advance_scale
         scaled_advance, scaled_lsb, shift_x = _fit_latin_metrics(
             advance,
             left_side_bearing,
-            outline_scale=outline_scale,
+            outline_scale=glyph_outline_scale,
             advance_scale=advance_scale,
         )
         glyf[glyph_name] = _redraw_scaled_glyph(
-            source_glyph_set, glyph_name, outline_scale, 1.0, shift_x
+            glyph_source_set, source_name, glyph_outline_scale, 1.0, shift_x
         )
         hmtx.metrics[glyph_name] = (scaled_advance, scaled_lsb)
 
@@ -436,8 +467,13 @@ def build_font(
     cjk_vertical_scale = float(lock["project"]["cjk_vertical_scale"])
     version = project_version or str(lock["project"]["version"])
     latin_path = MONASPACE_DIR / variant.latin_filename
+    connecting_path = (
+        MONASPACE_DIR / f"MonaspaceNeonFrozen-{variant.weight_name}.ttf"
+        if variant.is_italic
+        else latin_path
+    )
     cjk_path = PRETENDARD_DIR / variant.cjk_filename
-    for path in (latin_path, cjk_path):
+    for path in (latin_path, connecting_path, cjk_path):
         if not path.exists():
             raise FileNotFoundError(
                 f"원본 파일이 없습니다. 먼저 `monatendard fetch`를 실행하세요: {path}"
@@ -445,9 +481,16 @@ def build_font(
 
     target = TTFont(latin_path, recalcTimestamp=False)
     pristine = TTFont(latin_path, recalcTimestamp=False)
+    connecting = TTFont(connecting_path, recalcTimestamp=False)
     cjk = TTFont(cjk_path, recalcTimestamp=False)
     try:
-        latin_advance = scale_latin_horizontally(target, pristine, scale, latin_advance_em)
+        latin_advance = scale_latin_horizontally(
+            target,
+            pristine,
+            scale,
+            latin_advance_em,
+            connecting_font=connecting,
+        )
         copied = merge_cjk(
             target,
             cjk,
@@ -475,6 +518,7 @@ def build_font(
     finally:
         target.close()
         pristine.close()
+        connecting.close()
         cjk.close()
 
     logger.info(

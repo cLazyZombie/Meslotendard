@@ -50,7 +50,9 @@ Git에는 포함되지 않습니다.
 ### Monatendard 생성 과정
 
 1. Monaspace Neon Frozen, Pretendard, Nerd Fonts 원본 버전을 고정하고 SHA256을 확인합니다.
-2. Monaspace 글리프 윤곽을 가로 92.5%로 조정하고 0.595em 영문 셀 안에 배치합니다.
+2. Monaspace 글리프 윤곽을 가로 92.5%로 조정하고 0.595em 영문 셀 안에 배치하되,
+   박스 드로잉·블록·Powerline 문자는 셀 경계가 이어지도록 맞춥니다. 이탤릭에서도
+   연결 문자는 같은 굵기의 upright 윤곽을 사용합니다.
 3. Pretendard 한글·CJK 글리프를 가로 112%, 세로 108%로 조정해 영문 두 칸 셀에 병합합니다.
 4. Monatendard 패밀리명, 스타일, 고정폭, 버전 및 라이선스 정보를 설정합니다.
 5. 데스크톱용 TTF, 웹용 WOFF2 및 `@font-face` CSS를 생성합니다.
@@ -64,7 +66,7 @@ Git에는 포함되지 않습니다.
 - `monatendard build-nerd`: 일반판에 고정된 Nerd Fonts Symbols Only 아이콘을 병합합니다.
 - `monatendard verify`: 이름, 폭, 한글 글리프, 리게이처, 테이블 무결성을 확인합니다.
 - `monatendard verify --nerd`: Nerd 패밀리명, 필수 아이콘과 한 칸 폭을 추가 검사합니다.
-- `monatendard package --version 0.2.0`: Desktop/Desktop-Nerd/Web ZIP과 체크섬을 만듭니다.
+- `monatendard package --version 0.2.1`: Desktop/Desktop-Nerd/Web ZIP과 체크섬을 만듭니다.
 
 `Makefile`은 개발자용 단축 명령일 뿐이며 사용자 설치 과정에는 필요하지 않습니다.
 
@@ -72,7 +74,7 @@ Git에는 포함되지 않습니다.
 
 | 항목 | 값 |
 |---|---|
-| Monatendard | 0.2.0 |
+| Monatendard | 0.2.1 |
 | Monaspace Neon | 1.400 |
 | Pretendard | 1.3.9 |
 | Nerd Fonts Symbols Only | 3.4.0 |

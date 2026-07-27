@@ -83,7 +83,9 @@ uv run monatendard verify --nerd --reproducible
 1. Pin the Monaspace Neon Frozen, Pretendard, and Nerd Fonts sources and verify
    their SHA256 checksums.
 2. Scale the Monaspace glyph outlines horizontally to 92.5% and center them in
-   0.595em Latin cells.
+   0.595em Latin cells, while fitting box-drawing, block, and Powerline glyphs
+   to the cell edges so adjacent strokes remain continuous. Italic variants use
+   the matching upright outlines for these connecting glyphs.
 3. Scale Pretendard Hangul and CJK glyphs to 112% horizontally and 108%
    vertically, then merge them into cells exactly twice the Latin width.
 4. Set the Monatendard family, style, fixed-pitch, version, and license

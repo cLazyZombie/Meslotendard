@@ -25,4 +25,4 @@ verify:
 	uv run monatendard verify --nerd
 
 package:
-	uv run monatendard package --version 0.2.0
+	uv run monatendard package --version 0.2.1

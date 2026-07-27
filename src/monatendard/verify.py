@@ -27,6 +27,12 @@ from monatendard.sources import VARIANTS_BY_SUFFIX
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 REQUIRED_TABLES = {"cmap", "glyf", "head", "hhea", "hmtx", "maxp", "name", "OS/2", "post"}
 LIGATURE_FEATURES = {"liga", "calt", *(f"ss{number:02d}" for number in range(1, 11))}
+EDGE_JOIN_REQUIREMENTS = {
+    0x2500: (True, True),  # BOX DRAWINGS LIGHT HORIZONTAL
+    0x2588: (True, True),  # FULL BLOCK
+    0xE0B0: (True, False),  # POWERLINE SYMBOL RIGHT
+    0xE0B2: (False, True),  # POWERLINE SYMBOL LEFT
+}
 
 
 def _name_values(font: TTFont, name_id: int) -> set[str]:
@@ -79,6 +85,26 @@ def verify_font(path: Path) -> list[str]:
                     errors.append(
                         f"U+{codepoint:04X} advance={hmtx[glyph_name][0]}, "
                         f"expected={latin_advance * 2}"
+                    )
+
+            glyph_set = font.getGlyphSet()
+            for codepoint, (joins_left, joins_right) in EDGE_JOIN_REQUIREMENTS.items():
+                glyph_name = cmap.get(codepoint)
+                bounds = (
+                    _glyph_bounds(glyph_set, glyph_name) if glyph_name is not None else None
+                )
+                if bounds is None:
+                    errors.append(f"셀 접합 글리프 누락: U+{codepoint:04X}")
+                    continue
+                xmin, _, xmax, _ = bounds
+                if joins_left and xmin > 0:
+                    errors.append(
+                        f"U+{codepoint:04X} 왼쪽 셀 경계 미접합: xmin={xmin:g}"
+                    )
+                if joins_right and xmax < latin_advance:
+                    errors.append(
+                        f"U+{codepoint:04X} 오른쪽 셀 경계 미접합: "
+                        f"xmax={xmax:g}, expected>={latin_advance}"
                     )
 
         if "GSUB" not in font:

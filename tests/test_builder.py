@@ -6,6 +6,7 @@ from monatendard.builder import (
     _fit_cjk_transform,
     _fit_cjk_transform_xy,
     _fit_latin_metrics,
+    is_cell_connecting,
     is_cjk,
 )
 
@@ -58,3 +59,32 @@ def test_latin_outline_is_centered_in_wider_advance() -> None:
     assert advance == 1180
     assert shift == pytest.approx(16.5)
     assert left_side_bearing == 109
+
+
+@pytest.mark.parametrize(
+    "codepoint",
+    [0x2500, 0x257F, 0x2580, 0x259F, 0xE0B0, 0xE0D4],
+)
+def test_cell_connecting_ranges_are_selected(codepoint: int) -> None:
+    assert is_cell_connecting(codepoint)
+
+
+@pytest.mark.parametrize("codepoint", [0x249F, 0x25A0, 0xE0A3, 0xE0D5])
+def test_non_connecting_ranges_are_not_selected(codepoint: int) -> None:
+    assert not is_cell_connecting(codepoint)
+
+
+def test_connecting_outline_keeps_source_overlap_at_target_cell_edges() -> None:
+    advance_scale = 1190 / 1240
+    target_advance, _, shift = _fit_latin_metrics(
+        1240,
+        -10,
+        outline_scale=advance_scale,
+        advance_scale=advance_scale,
+    )
+    transformed_xmin = -10 * advance_scale + shift
+    transformed_xmax = 1250 * advance_scale + shift
+
+    assert target_advance == 1190
+    assert transformed_xmin < 0
+    assert transformed_xmax > target_advance
