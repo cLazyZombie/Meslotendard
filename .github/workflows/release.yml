@@ -41,6 +41,7 @@ jobs:
           body: |
             Meslotendard `${{ github.ref_name }}` 릴리스입니다.
 
+            - MesloLGM Nerd Font Mono의 중간 행간 적용
             - Nerd Font 아이콘을 포함한 단일 고정폭 글꼴
             - Regular, Italic, Bold, BoldItalic 제공
             - 영문 1칸과 한글 2칸 비율 적용

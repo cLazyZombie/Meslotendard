@@ -3,7 +3,7 @@
 Meslotendard는 [younjungpark/Monatendard](https://github.com/younjungpark/Monatendard)에서
 포크한 한글 코딩 글꼴 프로젝트입니다.
 
-MesloLGS Nerd Font Mono의 영문·아이콘과 Pretendard의 한글을 결합합니다.
+MesloLGM Nerd Font Mono의 영문·아이콘과 Pretendard의 한글을 결합합니다.
 폰트 패밀리 하나만 설치하면 Nerd Font 아이콘과 완전 고정폭을 함께 사용할 수 있으며,
 한글 한 글자는 영문 정확히 두 칸을 차지합니다. 코딩 리게이처는 포함하지 않습니다.
 

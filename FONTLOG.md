@@ -2,6 +2,11 @@
 
 이 문서는 원본 글꼴에서 변경한 내용을 기록합니다.
 
+## 0.3.1
+
+- 영문·아이콘 원본을 작은 행간의 MesloLGS Nerd Font Mono에서 중간 행간의
+  MesloLGM Nerd Font Mono로 변경했습니다.
+
 ## 0.3.0
 
 - `younjungpark/Monatendard`에서 포크했습니다.

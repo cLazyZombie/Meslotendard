@@ -7,7 +7,7 @@
 - 저작권: Copyright 2009, 2010, 2013 André Berg
 - 라이선스: Apache License 2.0
 
-Meslotendard는 MesloLGS Nerd Font Mono의 Regular, Bold, Italic, Bold Italic을
+Meslotendard는 MesloLGM Nerd Font Mono의 Regular, Bold, Italic, Bold Italic을
 영문·기호·아이콘 원본으로 사용합니다. 영문 셀 메트릭을 고정하고, 패밀리 이름과
 라이선스 메타데이터를 변경하며, 코딩 리게이처와 치환 테이블을 제거했습니다.
 Apache License 2.0 전문은 `MESLO_APACHE-2.0.txt`에 있습니다.
@@ -30,7 +30,7 @@ Pretendard의 한글·CJK 윤곽을 크기와 위치를 조정해 영문 두 칸
 - 라이선스 원문: `NERD_FONTS_LICENSE.txt`
 - 라이선스 감사표: https://github.com/ryanoasis/nerd-fonts/blob/v3.4.0/license-audit.md
 
-MesloLGS Nerd Font Mono에 포함된 Nerd Font 아이콘을 한 칸 고정폭으로 유지합니다.
+MesloLGM Nerd Font Mono에 포함된 Nerd Font 아이콘을 한 칸 고정폭으로 유지합니다.
 Nerd Fonts 자체 소스와 Symbols Only 글꼴은 MIT로 분류되지만, 포함된 아이콘의
 원본별 조건은 서로 다릅니다. 공식 감사표에 따라 Codicons와 Font Awesome은
 CC BY 4.0, Material Design Icons는 Apache 2.0, Pomicons와 Weather Icons는

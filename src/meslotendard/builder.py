@@ -1,4 +1,4 @@
-"""MesloLGS Nerd Font Mono와 Pretendard 한글을 병합한다."""
+"""MesloLGM Nerd Font Mono와 Pretendard 한글을 병합한다."""
 
 from __future__ import annotations
 

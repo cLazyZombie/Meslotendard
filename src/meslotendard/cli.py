@@ -32,7 +32,7 @@ def _parser() -> argparse.ArgumentParser:
 
     build = subparsers.add_parser(
         "build",
-        help="MesloLGS Nerd Font Mono와 Pretendard 병합",
+        help="MesloLGM Nerd Font Mono와 Pretendard 병합",
     )
     _add_variant_selection(build)
     build.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)

@@ -39,11 +39,11 @@ class Variant:
 
     @property
     def latin_filename(self) -> str:
-        return f"MesloLGSNerdFontMono-{self.source_suffix}.ttf"
+        return f"MesloLGMNerdFontMono-{self.source_suffix}.ttf"
 
     @property
     def upright_latin_filename(self) -> str:
-        return f"MesloLGSNerdFontMono-{self.weight_name}.ttf"
+        return f"MesloLGMNerdFontMono-{self.weight_name}.ttf"
 
     @property
     def cjk_filename(self) -> str:
@@ -160,7 +160,7 @@ def write_sources_note(lock: dict) -> None:
     lines = [
         "# Meslotendard 빌드 입력",
         "",
-        f"- MesloLGS Nerd Font Mono: {meslo['version']}",
+        f"- {meslo['name']}: {meslo['version']}",
         f"- Pretendard: {pretendard['version']}",
         f"- 영문 윤곽 가로 배율: {project['latin_horizontal_scale']:.6f}",
         f"- 영문 셀 너비: {project['latin_advance_em']:.12f}em",

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -22,8 +23,8 @@ def test_variant_matrix_has_two_real_weights_and_two_styles() -> None:
 
 def test_regular_italic_source_name_matches_meslo_archive() -> None:
     variant = make_variant("Regular", "italic")
-    assert variant.latin_filename == "MesloLGSNerdFontMono-Italic.ttf"
-    assert variant.upright_latin_filename == "MesloLGSNerdFontMono-Regular.ttf"
+    assert variant.latin_filename == "MesloLGMNerdFontMono-Italic.ttf"
+    assert variant.upright_latin_filename == "MesloLGMNerdFontMono-Regular.ttf"
     assert variant.cjk_filename == "Pretendard-Regular.ttf"
     assert variant.output_suffix == "Italic"
 
@@ -37,10 +38,14 @@ def test_unknown_variant_values_are_rejected() -> None:
 
 def test_lock_pins_sources_metrics_and_sha256() -> None:
     lock = load_lock()
-    assert lock["project"]["version"] == __version__ == "0.3.0"
+    with (Path(__file__).parents[1] / "pyproject.toml").open("rb") as handle:
+        pyproject = tomllib.load(handle)
+
+    assert lock["project"]["version"] == __version__ == pyproject["project"]["version"]
     assert lock["project"]["family"] == "Meslotendard"
     assert lock["project"]["latin_horizontal_scale"] == 1.0
     assert lock["project"]["latin_advance_em"] == pytest.approx(1233 / 2048)
+    assert lock["sources"]["meslo"]["name"] == "MesloLGM Nerd Font Mono"
     assert lock["sources"]["meslo"]["version"] == "1.21 / Nerd Fonts 3.4.0"
     assert lock["sources"]["pretendard"]["version"] == "1.3.9"
     for source in lock["sources"].values():

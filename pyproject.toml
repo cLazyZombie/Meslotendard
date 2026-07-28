@@ -1,7 +1,7 @@
 [project]
 name = "meslotendard"
-version = "0.3.0"
-description = "MesloLGS Nerd Font Mono와 Pretendard를 결합한 한글 코딩 글꼴 빌드 도구"
+version = "0.3.1"
+description = "MesloLGM Nerd Font Mono와 Pretendard를 결합한 한글 코딩 글꼴 빌드 도구"
 readme = "README.md"
 license = "OFL-1.1"
 requires-python = ">=3.11"

@@ -3,6 +3,7 @@ from __future__ import annotations
 import zipfile
 from pathlib import Path
 
+from meslotendard import __version__
 from meslotendard.packaging import create_release_assets
 
 
@@ -22,7 +23,7 @@ def test_release_package_contains_four_fonts_licenses_and_checksums(
 
     with zipfile.ZipFile(assets[0]) as archive:
         names = set(archive.namelist())
-        assert archive.read("VERSION.txt") == b"0.3.0\n"
+        assert archive.read("VERSION.txt") == f"{__version__}\n".encode("ascii")
         assert len(archive.read("SHA256SUMS.txt").decode("ascii").splitlines()) == 4
 
     for suffix in ("Regular", "Bold", "Italic", "BoldItalic"):
