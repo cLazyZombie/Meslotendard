@@ -1,69 +1,83 @@
 from __future__ import annotations
 
 from pathlib import Path
+from stat import S_IXUSR
 
 ROOT = Path(__file__).resolve().parents[1]
+IGNORED_SCAN_PARTS = {
+    ".git",
+    ".pytest_cache",
+    ".pytest_tmp",
+    ".ruff_cache",
+    ".venv",
+    "build",
+    "dist",
+    "fonts",
+    "upstream",
+}
 
 
-def test_windows_scripts_are_ascii_only() -> None:
-    scripts = (ROOT / "packaging" / "windows").glob("*.ps1")
-    for script in scripts:
-        assert script.read_text(encoding="utf-8").isascii()
+def test_readme_is_short_korean_fork_documentation() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    assert "younjungpark/Monatendard" in readme
+    assert "https://github.com/younjungpark/Monatendard" in readme
+    assert "Meslotendard" in readme
+    assert "Nerd Font" in readme
+    assert "한글" in readme
+    assert len(readme.splitlines()) < 160
+    assert not (ROOT / "README.ko.md").exists()
 
 
-def test_project_surfaces_link_to_official_website() -> None:
-    official_url = "https://monatendard.github.io/"
-    paths = [
-        ROOT / "README.ko.md",
-        ROOT / "pyproject.toml",
-        ROOT / "packaging" / "windows" / "설치방법.txt",
-        ROOT / "packaging" / "windows" / "Nerd-설치방법.txt",
-    ]
-    for path in paths:
-        assert official_url in path.read_text(encoding="utf-8")
+def test_agents_file_keeps_only_project_invariants() -> None:
+    agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    for required in (
+        "younjungpark/Monatendard",
+        "Meslotendard",
+        "Nerd Font",
+        "한글·전각 CJK는 두 칸",
+        "./build.sh",
+        "라이선스",
+    ):
+        assert required in agents
+    assert len(agents.splitlines()) < 40
 
 
-def test_windows_scripts_support_dry_run_and_user_install() -> None:
-    installer = (ROOT / "packaging" / "windows" / "Install-Monatendard.ps1").read_text(
-        encoding="utf-8"
+def test_local_build_script_is_executable_and_cross_platform() -> None:
+    script = ROOT / "build.sh"
+    contents = script.read_text(encoding="utf-8")
+    assert script.stat().st_mode & S_IXUSR
+    assert "Darwin | Linux" in contents
+    assert "verify --reproducible" in contents
+    assert "meslotendard package" in contents
+
+
+def test_removed_web_and_windows_surfaces_stay_removed() -> None:
+    assert not (ROOT / "packaging" / "windows").exists()
+    tracked_text = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in ROOT.rglob("*")
+        if path.is_file()
+        and not IGNORED_SCAN_PARTS.intersection(path.parts)
+        and path.suffix in {".py", ".sh", ".toml", ".md", ".yml", ".yaml", ".txt"}
+        and path.name not in {"uv.lock"}
     )
-    uninstaller = (ROOT / "packaging" / "windows" / "Uninstall-Monatendard.ps1").read_text(
-        encoding="utf-8"
+    forbidden = (
+        "monatendard" + ".github.io",
+        "woff" + "2",
+        "@font" + "-face",
+        "Install-" + "Monatendard",
     )
-    for script in (installer, uninstaller):
-        assert "SupportsShouldProcess" in script
-        assert "HKCU:" in script
-        assert "WM_FONTCHANGE" not in script or "0x001D" in script
-    assert "LOCALAPPDATA" in installer
-    assert "-Value $destination" in installer
-    assert "-Value $font.Name" not in installer
-    assert "GetFileName([string]$property.Value)" in uninstaller
-    assert "Monatendard-*.ttf" in uninstaller
+    for text in forbidden:
+        assert text.lower() not in tracked_text.lower()
 
 
-def test_nerd_windows_scripts_are_isolated_from_standard_family() -> None:
-    installer = (
-        ROOT / "packaging" / "windows" / "Install-Monatendard-Nerd.ps1"
-    ).read_text(encoding="utf-8")
-    uninstaller = (
-        ROOT / "packaging" / "windows" / "Uninstall-Monatendard-Nerd.ps1"
-    ).read_text(encoding="utf-8")
-    for script in (installer, uninstaller):
-        assert "SupportsShouldProcess" in script
-        assert "HKCU:" in script
-        assert "MonatendardNFM-*.ttf" in script
-        assert "Monatendard Nerd Font Mono" in script
-    assert "-Value $destination" in installer
-    assert "RemoveFontResourceEx" in installer
-    assert "GetFileName([string]$property.Value)" in uninstaller
-
-
-def test_windows_installers_preserve_existing_font_registry_entries() -> None:
-    installers = [
-        ROOT / "packaging" / "windows" / "Install-Monatendard.ps1",
-        ROOT / "packaging" / "windows" / "Install-Monatendard-Nerd.ps1",
-    ]
-    for path in installers:
-        installer = path.read_text(encoding="utf-8")
-        assert "New-Item -Force -Path $fontRegistry" not in installer
-        assert "if (-not (Test-Path -LiteralPath $fontRegistry))" in installer
+def test_license_and_change_documents_are_packaged_sources() -> None:
+    required = (
+        ROOT / "LICENSE",
+        ROOT / "FONTLOG.md",
+        ROOT / "licenses" / "MESLO_APACHE-2.0.txt",
+        ROOT / "licenses" / "NERD_FONTS_LICENSE.txt",
+        ROOT / "licenses" / "THIRD_PARTY_NOTICES.md",
+    )
+    for path in required:
+        assert path.is_file(), path

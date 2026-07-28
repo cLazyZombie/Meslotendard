@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import pytest
 
-from monatendard.builder import (
-    _fit_cjk_transform,
+from meslotendard.builder import (
     _fit_cjk_transform_xy,
     _fit_latin_metrics,
     is_cell_connecting,
     is_cjk,
+    is_double_cell,
 )
 
 
@@ -21,17 +21,14 @@ def test_non_cjk_ranges_are_not_selected(codepoint: int) -> None:
     assert not is_cjk(codepoint)
 
 
-def test_cjk_transform_centers_outline_in_two_cell_advance() -> None:
-    scale, shift = _fit_cjk_transform(
-        (100, -200, 900, 800),
-        normalized_scale=2.0,
-        target_advance=2220,
-        safe_ymin=-500,
-        safe_ymax=1600,
-    )
-    transformed_center = ((100 + 900) / 2) * scale + shift
-    assert transformed_center == pytest.approx(1110)
-    assert 0 < scale <= 2.0
+@pytest.mark.parametrize("codepoint", [0x1100, 0x3131, 0xAC00, 0x4E00, 0xFF01])
+def test_fullwidth_cjk_uses_two_cells(codepoint: int) -> None:
+    assert is_double_cell(codepoint)
+
+
+@pytest.mark.parametrize("codepoint", [0x41, 0xFF61, 0xFF9F, 0xFFA0, 0xFFDC, 0xFFE8])
+def test_latin_and_halfwidth_forms_use_one_cell(codepoint: int) -> None:
+    assert not is_double_cell(codepoint)
 
 
 def test_cjk_transform_supports_independent_horizontal_and_vertical_scale() -> None:
@@ -51,14 +48,14 @@ def test_cjk_transform_supports_independent_horizontal_and_vertical_scale() -> N
 
 def test_latin_outline_is_centered_in_wider_advance() -> None:
     advance, left_side_bearing, shift = _fit_latin_metrics(
-        1240,
+        1233,
         100,
-        outline_scale=0.925,
-        advance_scale=1180 / 1240,
+        outline_scale=1.0,
+        advance_scale=1.0,
     )
-    assert advance == 1180
-    assert shift == pytest.approx(16.5)
-    assert left_side_bearing == 109
+    assert advance == 1233
+    assert shift == pytest.approx(0)
+    assert left_side_bearing == 100
 
 
 @pytest.mark.parametrize(

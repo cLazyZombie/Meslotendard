@@ -1,23 +1,29 @@
-name: CI
+name: 지속적 검증
 
 on:
   pull_request:
   push:
-    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
-  test-and-smoke-build:
+  build-and-verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
-      - run: uv sync --all-groups --frozen
-      - run: uv run ruff check .
-      - run: uv run pytest
-      - run: uv run monatendard fetch
-      - run: uv run monatendard build --variants Regular
-      - run: uv run monatendard verify --reproducible
-      - run: uv run monatendard build-nerd --variants Regular
-      - run: uv run monatendard verify --nerd --reproducible
+      - name: 전체 빌드와 검증
+        run: ./build.sh
+      - name: 빌드 결과 보관
+        uses: actions/upload-artifact@v4
+        with:
+          name: Meslotendard-${{ github.sha }}
+          path: |
+            dist/Meslotendard.zip
+            dist/SHA256SUMS.txt
+            assets/meslotendard-preview.png
+          retention-days: 14
+          if-no-files-found: error

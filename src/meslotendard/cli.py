@@ -1,4 +1,4 @@
-"""Monatendard 개발자용 명령행 인터페이스."""
+"""Meslotendard 개발자용 명령행 인터페이스."""
 
 from __future__ import annotations
 
@@ -6,24 +6,16 @@ import argparse
 import logging
 from pathlib import Path
 
-from monatendard.builder import DEFAULT_OUTPUT_DIR, build_variants
-from monatendard.nerd import (
-    DEFAULT_NERD_OUTPUT_DIR,
-    DEFAULT_STANDARD_INPUT_DIR,
-    build_nerd_variants,
-)
-from monatendard.packaging import create_release_assets
-from monatendard.sources import VARIANTS, VARIANTS_BY_SUFFIX, fetch_sources
-from monatendard.verify import (
-    verify_directory,
-    verify_nerd_reproducible,
-    verify_reproducible,
-)
+from meslotendard.builder import DEFAULT_OUTPUT_DIR, build_variants
+from meslotendard.packaging import create_release_assets
+from meslotendard.render import render_specimen
+from meslotendard.sources import VARIANTS, VARIANTS_BY_SUFFIX, fetch_sources
+from meslotendard.verify import verify_directory, verify_reproducible
 
 
 def _add_variant_selection(parser: argparse.ArgumentParser) -> None:
     selection = parser.add_mutually_exclusive_group()
-    selection.add_argument("--all", action="store_true", help="전체 14개 variant 빌드")
+    selection.add_argument("--all", action="store_true", help="전체 4개 variant 빌드")
     selection.add_argument(
         "--variants",
         nargs="+",
@@ -33,30 +25,32 @@ def _add_variant_selection(parser: argparse.ArgumentParser) -> None:
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Monatendard 재현 가능 글꼴 빌드")
+    parser = argparse.ArgumentParser(description="Meslotendard 재현 가능 글꼴 빌드")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     subparsers.add_parser("fetch", help="고정 원본 다운로드, SHA256 검증 및 추출")
 
-    build = subparsers.add_parser("build", help="92.5% Monaspace와 Pretendard 병합")
+    build = subparsers.add_parser(
+        "build",
+        help="MesloLGS Nerd Font Mono와 Pretendard 병합",
+    )
     _add_variant_selection(build)
     build.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
 
-    build_nerd = subparsers.add_parser(
-        "build-nerd",
-        help="일반 Monatendard에 Nerd Fonts 아이콘 병합",
-    )
-    _add_variant_selection(build_nerd)
-    build_nerd.add_argument("--input-dir", type=Path, default=DEFAULT_STANDARD_INPUT_DIR)
-    build_nerd.add_argument("--output-dir", type=Path, default=DEFAULT_NERD_OUTPUT_DIR)
-
-    verify = subparsers.add_parser("verify", help="생성 글꼴 자동 검증")
-    verify.add_argument("--font-dir", type=Path)
-    verify.add_argument("--nerd", action="store_true", help="Nerd 전용 TTF 검사")
+    verify = subparsers.add_parser("verify", help="생성 TTF 자동 검증")
+    verify.add_argument("--font-dir", type=Path, default=DEFAULT_OUTPUT_DIR / "ttf")
     verify.add_argument("--reproducible", action="store_true", help="Regular 두 번 빌드 비교")
 
+    render = subparsers.add_parser("render", help="실제 TTF 1:2 격자 검수 이미지 생성")
+    render.add_argument("--font-dir", type=Path, default=DEFAULT_OUTPUT_DIR / "ttf")
+    render.add_argument(
+        "--output",
+        type=Path,
+        default=Path("assets/meslotendard-preview.png"),
+    )
+
     package = subparsers.add_parser("package", help="GitHub Release 자산 생성")
-    package.add_argument("--version", required=True)
+    package.add_argument("--version")
     package.add_argument("--fonts-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     package.add_argument("--dist-dir", type=Path, default=Path("dist"))
     return parser
@@ -96,41 +90,25 @@ def main(argv: list[str] | None = None) -> int:
                 )
             return 0
 
-        if args.command == "build-nerd":
-            variants = _selected_variants(args.variants, args.all)
-            stats = build_nerd_variants(
-                variants,
-                input_dir=args.input_dir,
-                output_dir=args.output_dir,
-            )
-            for result in stats:
-                print(
-                    f"Nerd 생성 완료: {result.output_path} "
-                    f"(아이콘={result.mapped_symbol_count}, "
-                    f"영문={result.latin_advance}, 한글={result.hangul_advance})"
-                )
-            return 0
-
         if args.command == "verify":
-            font_dir = args.font_dir or (
-                DEFAULT_NERD_OUTPUT_DIR if args.nerd else DEFAULT_OUTPUT_DIR / "ttf"
-            )
-            failures = verify_directory(font_dir, nerd=args.nerd)
+            failures = verify_directory(args.font_dir)
             for path, errors in failures.items():
                 for error in errors:
                     print(f"실패: {path}: {error}")
             if failures:
                 return 1
-            print(f"검증 완료: {font_dir}")
+            print(f"검증 완료: {args.font_dir}")
             if args.reproducible:
-                reproducibility_check = (
-                    verify_nerd_reproducible if args.nerd else verify_reproducible
-                )
-                same, first, second = reproducibility_check()
+                same, first, second = verify_reproducible()
                 print(f"재현성 SHA256: {first}")
                 if not same:
                     print(f"재현성 실패: second={second}")
                     return 1
+            return 0
+
+        if args.command == "render":
+            path = render_specimen(args.font_dir, args.output)
+            print(f"검수 이미지: {path}")
             return 0
 
         if args.command == "package":

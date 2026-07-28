@@ -1,19 +1,21 @@
 [project]
-name = "monatendard"
-version = "0.2.1"
-description = "Monaspace Neon과 Pretendard를 결합한 한글 코딩 글꼴 빌드 도구"
-readme = "README.ko.md"
+name = "meslotendard"
+version = "0.3.0"
+description = "MesloLGS Nerd Font Mono와 Pretendard를 결합한 한글 코딩 글꼴 빌드 도구"
+readme = "README.md"
+license = "OFL-1.1"
 requires-python = ">=3.11"
 dependencies = [
-    "brotli>=1.1.0",
     "fonttools>=4.59.0",
+    "pillow>=11.0.0",
+    "uharfbuzz>=0.52.0",
 ]
 
 [project.urls]
-Homepage = "https://monatendard.github.io/"
+Repository = "https://github.com/cLazyZombie/Meslotendard"
 
 [project.scripts]
-monatendard = "monatendard.cli:main"
+meslotendard = "meslotendard.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.8.0,<0.9.0"]

@@ -3,48 +3,33 @@ from __future__ import annotations
 import zipfile
 from pathlib import Path
 
-from monatendard.packaging import create_release_assets
+from meslotendard.packaging import create_release_assets
 
 
-def test_release_package_contains_installer_fonts_licenses_and_checksums(
+def test_release_package_contains_four_fonts_licenses_and_checksums(
     tmp_path: Path,
 ) -> None:
-    fonts = tmp_path / "fonts"
-    (fonts / "ttf").mkdir(parents=True)
-    (fonts / "nerd-ttf").mkdir()
-    (fonts / "webfont").mkdir()
-    (fonts / "ttf" / "Monatendard-Regular.ttf").write_bytes(b"ttf")
-    (fonts / "nerd-ttf" / "MonatendardNFM-Regular.ttf").write_bytes(b"nerd-ttf")
-    (fonts / "webfont" / "Monatendard-Regular.woff2").write_bytes(b"woff2")
-    (fonts / "webfont" / "monatendard.css").write_text("@font-face {}", encoding="utf-8")
+    fonts = tmp_path / "fonts" / "ttf"
+    fonts.mkdir(parents=True)
+    for suffix in ("Regular", "Bold", "Italic", "BoldItalic"):
+        (fonts / f"Meslotendard-{suffix}.ttf").write_bytes(suffix.encode("ascii"))
 
     assets = create_release_assets(
-        version="0.1.0-beta.1",
-        fonts_dir=fonts,
+        fonts_dir=tmp_path / "fonts",
         dist_dir=tmp_path / "dist",
     )
-    assert [path.name for path in assets] == [
-        "Monatendard-v0.1.0-beta.1-Desktop.zip",
-        "Monatendard-v0.1.0-beta.1-Desktop-Nerd.zip",
-        "Monatendard-v0.1.0-beta.1-Web.zip",
-        "SHA256SUMS.txt",
-    ]
+    assert [path.name for path in assets] == ["Meslotendard.zip", "SHA256SUMS.txt"]
 
     with zipfile.ZipFile(assets[0]) as archive:
         names = set(archive.namelist())
-    assert "fonts/Monatendard-Regular.ttf" in names
-    assert "Install-Monatendard.ps1" in names
-    assert "Uninstall-Monatendard.ps1" in names
-    assert "설치방법.txt" in names
-    assert "LICENSES/LICENSE" in names
-    assert "LICENSES/THIRD_PARTY_NOTICES.md" in names
+        assert archive.read("VERSION.txt") == b"0.3.0\n"
+        assert len(archive.read("SHA256SUMS.txt").decode("ascii").splitlines()) == 4
 
-    with zipfile.ZipFile(assets[1]) as archive:
-        nerd_names = set(archive.namelist())
-    assert "fonts/MonatendardNFM-Regular.ttf" in nerd_names
-    assert "Install-Monatendard-Nerd.ps1" in nerd_names
-    assert "Uninstall-Monatendard-Nerd.ps1" in nerd_names
-    assert "설치방법.txt" in nerd_names
-    assert "LICENSES/NERD_FONTS_LICENSE.txt" in nerd_names
-
-    assert len(assets[3].read_text(encoding="ascii").splitlines()) == 3
+    for suffix in ("Regular", "Bold", "Italic", "BoldItalic"):
+        assert f"Meslotendard-{suffix}.ttf" in names
+    assert "LICENSE" in names
+    assert "FONTLOG.md" in names
+    assert "licenses/THIRD_PARTY_NOTICES.md" in names
+    assert "licenses/MESLO_APACHE-2.0.txt" in names
+    assert "licenses/NERD_FONTS_LICENSE.txt" in names
+    assert len(assets[1].read_text(encoding="ascii").splitlines()) == 1

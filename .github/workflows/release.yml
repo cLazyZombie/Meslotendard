@@ -1,13 +1,9 @@
-name: Release
+name: 릴리스
 
 on:
   push:
     tags: ["v*"]
   workflow_dispatch:
-    inputs:
-      version:
-        description: "SemVer 버전 (예: 0.1.0-beta.1)"
-        required: true
 
 permissions:
   contents: write
@@ -20,32 +16,28 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
-      - run: uv sync --all-groups --frozen
-      - run: uv run ruff check .
-      - run: uv run pytest
-      - run: uv run monatendard fetch
-      - run: uv run monatendard build --all
-      - run: uv run monatendard verify --reproducible
-      - run: uv run monatendard build-nerd --all
-      - run: uv run monatendard verify --nerd --reproducible
-      - name: 버전 결정
-        id: version
-        shell: bash
-        run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "value=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "value=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
-          fi
-      - run: uv run monatendard package --version "${{ steps.version.outputs.value }}"
-      - name: 체크섬 검증
-        working-directory: dist
-        run: sha256sum --check SHA256SUMS.txt
-      - uses: softprops/action-gh-release@v2
+      - name: 수동 전체 빌드와 검증
+        if: github.event_name == 'workflow_dispatch'
+        run: ./build.sh
+      - name: 태그 버전 전체 빌드와 검증
+        if: github.event_name == 'push'
+        run: ./build.sh "${GITHUB_REF_NAME#v}"
+      - name: 수동 빌드 결과 보관
+        uses: actions/upload-artifact@v4
+        with:
+          name: Meslotendard-${{ github.ref_name }}
+          path: |
+            dist/Meslotendard.zip
+            dist/SHA256SUMS.txt
+            assets/meslotendard-preview.png
+          retention-days: 14
+          if-no-files-found: error
+      - name: GitHub Release 게시
+        uses: softprops/action-gh-release@v2
         if: github.event_name == 'push'
         with:
           prerelease: ${{ contains(github.ref_name, '-') }}
           generate_release_notes: true
           files: |
-            dist/Monatendard-*.zip
+            dist/Meslotendard.zip
             dist/SHA256SUMS.txt

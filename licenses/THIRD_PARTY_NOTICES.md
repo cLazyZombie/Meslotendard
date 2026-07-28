@@ -1,13 +1,16 @@
-# 제3자 글꼴 및 구현 고지
+# 제3자 글꼴 고지
 
-## Monaspace Neon 1.400
+## Meslo LG 1.21 / Nerd Fonts 3.4.0
 
-- 원본: https://github.com/githubnext/monaspace
-- 저작권: Copyright (c) 2023, GitHub
-- 라이선스: SIL Open Font License 1.1
-- Reserved Font Names: Monaspace, Argon, Neon, Xenon, Radon, Krypton
+- 원본: https://github.com/andreberg/Meslo-Font
+- 사용 배포본: https://github.com/ryanoasis/nerd-fonts/releases/tag/v3.4.0
+- 저작권: Copyright 2009, 2010, 2013 André Berg
+- 라이선스: Apache License 2.0
 
-Monatendard는 위 Reserved Font Name을 최종 패밀리 이름으로 사용하지 않습니다.
+Meslotendard는 MesloLGS Nerd Font Mono의 Regular, Bold, Italic, Bold Italic을
+영문·기호·아이콘 원본으로 사용합니다. 영문 셀 메트릭을 고정하고, 패밀리 이름과
+라이선스 메타데이터를 변경하며, 코딩 리게이처와 치환 테이블을 제거했습니다.
+Apache License 2.0 전문은 `MESLO_APACHE-2.0.txt`에 있습니다.
 
 ## Pretendard 1.3.9
 
@@ -16,22 +19,29 @@ Monatendard는 위 Reserved Font Name을 최종 패밀리 이름으로 사용하
 - 라이선스: SIL Open Font License 1.1
 - Reserved Font Name: Pretendard
 
-Monatendard는 위 Reserved Font Name을 최종 패밀리 이름으로 사용하지 않습니다.
+Pretendard의 한글·CJK 윤곽을 크기와 위치를 조정해 영문 두 칸 셀에 병합했습니다.
+최종 패밀리 이름 `Meslotendard`는 Reserved Font Name `Pretendard`를 사용하지 않습니다.
+결과 폰트 전체는 SIL Open Font License 1.1로 배포됩니다.
 
-## Nerd Fonts Symbols Only 3.4.0
+## Nerd Fonts 아이콘
 
 - 원본: https://github.com/ryanoasis/nerd-fonts
-- 저작권: Copyright (c) 2014 Ryan L McIntyre
-- 라이선스: MIT License
+- 사용 버전: 3.4.0
+- 라이선스 원문: `NERD_FONTS_LICENSE.txt`
+- 라이선스 감사표: https://github.com/ryanoasis/nerd-fonts/blob/v3.4.0/license-audit.md
 
-`Monatendard Nerd Font Mono` 변형에만 Symbols Only 글리프를 포함합니다. 전체 MIT
-라이선스는 `NERD_FONTS_LICENSE.txt`를 확인해 주세요.
+MesloLGS Nerd Font Mono에 포함된 Nerd Font 아이콘을 한 칸 고정폭으로 유지합니다.
+Nerd Fonts 자체 소스와 Symbols Only 글꼴은 MIT로 분류되지만, 포함된 아이콘의
+원본별 조건은 서로 다릅니다. 공식 감사표에 따라 Codicons와 Font Awesome은
+CC BY 4.0, Material Design Icons는 Apache 2.0, Pomicons와 Weather Icons는
+SIL Open Font License 1.1이며, 그 밖의 Devicons·Octicons·Powerline 계열 등은
+각 원본의 MIT 또는 자유 라이선스 고지를 따릅니다. Meslotendard는 해당 아이콘을
+Nerd Fonts 3.4.0 배포본에서 가져와 크기와 셀 폭을 조정했습니다.
 
-## 구현 참고
+## Monatendard
 
-글리프 병합, 두 영문 칸 advance, 고정폭 메타데이터 처리 방식은
-[Jetendard](https://github.com/kuskhan/jetendard) 및 그 저장소가 고지한
-Yeomil Mono의 접근을 참고했습니다. Monatendard의 구현은 Monaspace Neon 영문 전체를
-가로 92.5%로 조정하는 별도 요구에 맞게 작성되었습니다.
+- 원본: https://github.com/younjungpark/Monatendard
+- 라이선스: SIL Open Font License 1.1
 
-전체 SIL Open Font License 1.1은 배포 패키지의 `LICENSE` 파일을 확인해 주세요.
+Meslotendard는 Monatendard의 재현 가능한 다운로드, 한글 병합, 고정폭 검증과
+패키징 구조를 바탕으로 대폭 수정한 포크입니다.

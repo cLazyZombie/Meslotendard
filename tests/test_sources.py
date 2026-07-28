@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from monatendard import __version__
-from monatendard.sources import (
+from meslotendard import __version__
+from meslotendard.sources import (
     VARIANTS,
     VARIANTS_BY_SUFFIX,
     load_lock,
@@ -15,37 +15,34 @@ from monatendard.sources import (
 )
 
 
-def test_variant_matrix_has_seven_weights_and_two_styles() -> None:
-    assert len(VARIANTS) == 14
-    assert "Regular" in VARIANTS_BY_SUFFIX
-    assert "Italic" in VARIANTS_BY_SUFFIX
-    assert "ExtraBoldItalic" in VARIANTS_BY_SUFFIX
+def test_variant_matrix_has_two_real_weights_and_two_styles() -> None:
+    assert len(VARIANTS) == 4
+    assert set(VARIANTS_BY_SUFFIX) == {"Regular", "Italic", "Bold", "BoldItalic"}
 
 
-def test_regular_italic_source_name_matches_upstream() -> None:
+def test_regular_italic_source_name_matches_meslo_archive() -> None:
     variant = make_variant("Regular", "italic")
-    assert variant.latin_filename == "MonaspaceNeonFrozen-Italic.ttf"
+    assert variant.latin_filename == "MesloLGSNerdFontMono-Italic.ttf"
+    assert variant.upright_latin_filename == "MesloLGSNerdFontMono-Regular.ttf"
+    assert variant.cjk_filename == "Pretendard-Regular.ttf"
     assert variant.output_suffix == "Italic"
-    assert variant.subfamily_name == "Italic"
 
 
 def test_unknown_variant_values_are_rejected() -> None:
     with pytest.raises(ValueError, match="weight"):
-        make_variant("Thin", "normal")
+        make_variant("Medium", "normal")
     with pytest.raises(ValueError, match="style"):
         make_variant("Regular", "oblique")
 
 
-def test_lock_pins_required_versions_scale_and_sha256() -> None:
+def test_lock_pins_sources_metrics_and_sha256() -> None:
     lock = load_lock()
-    assert lock["project"]["version"] == __version__ == "0.2.1"
-    assert lock["project"]["latin_horizontal_scale"] == 0.925
-    assert lock["project"]["latin_advance_em"] == 0.595
-    assert lock["project"]["cjk_horizontal_scale"] == 1.12
-    assert lock["project"]["cjk_vertical_scale"] == 1.08
-    assert lock["sources"]["monaspace"]["version"] == "1.400"
+    assert lock["project"]["version"] == __version__ == "0.3.0"
+    assert lock["project"]["family"] == "Meslotendard"
+    assert lock["project"]["latin_horizontal_scale"] == 1.0
+    assert lock["project"]["latin_advance_em"] == pytest.approx(1233 / 2048)
+    assert lock["sources"]["meslo"]["version"] == "1.21 / Nerd Fonts 3.4.0"
     assert lock["sources"]["pretendard"]["version"] == "1.3.9"
-    assert lock["sources"]["nerd_fonts"]["version"] == "3.4.0"
     for source in lock["sources"].values():
         assert len(source["sha256"]) == 64
         int(source["sha256"], 16)

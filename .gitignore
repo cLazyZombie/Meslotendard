@@ -1,5 +1,6 @@
 __pycache__/
 *.py[cod]
+.DS_Store
 .pytest_cache/
 .pytest_tmp/
 .ruff_cache/
@@ -9,8 +10,3 @@ dist/
 fonts/
 upstream/
 *.log
-*.zip
-*.woff2
-*.ttf
-*.otf
-SHA256SUMS.txt
