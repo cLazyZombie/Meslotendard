@@ -81,3 +81,12 @@ def test_license_and_change_documents_are_packaged_sources() -> None:
     )
     for path in required:
         assert path.is_file(), path
+
+
+def test_release_workflow_uses_current_runtime_and_korean_notes() -> None:
+    workflow = (ROOT / ".github" / "workflows" / "release.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "softprops/action-gh-release@v3" in workflow
+    assert "Meslotendard `${{ github.ref_name }}` 릴리스입니다." in workflow
+    assert "generate_release_notes" not in workflow

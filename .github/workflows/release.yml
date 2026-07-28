@@ -34,11 +34,19 @@ jobs:
           retention-days: 14
           if-no-files-found: error
       - name: GitHub Release 게시
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: github.event_name == 'push'
         with:
           prerelease: ${{ contains(github.ref_name, '-') }}
-          generate_release_notes: true
+          body: |
+            Meslotendard `${{ github.ref_name }}` 릴리스입니다.
+
+            - Nerd Font 아이콘을 포함한 단일 고정폭 글꼴
+            - Regular, Italic, Bold, BoldItalic 제공
+            - 영문 1칸과 한글 2칸 비율 적용
+            - 리게이처 비활성화
+
+            `Meslotendard.zip`과 `SHA256SUMS.txt`를 함께 제공합니다.
           files: |
             dist/Meslotendard.zip
             dist/SHA256SUMS.txt
