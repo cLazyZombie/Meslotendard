@@ -1,4 +1,4 @@
-"""Meslotendard 글꼴 빌더."""
+"""Argontendard 글꼴 빌더."""
 
 __version__ = "0.3.1"
 

@@ -1,4 +1,4 @@
-"""Meslotendard의 이름, 폭, 아이콘, 리게이처 부재와 재현성을 검증한다."""
+"""Argontendard의 이름, 폭, 아이콘, 리게이처 부재와 재현성을 검증한다."""
 
 from __future__ import annotations
 
@@ -108,7 +108,7 @@ def _verify_shaping(path: Path, font: TTFont, latin_advance: int) -> list[str]:
 
 
 def verify_font(path: Path) -> list[str]:
-    """한 Meslotendard TTF를 검사하고 실패 사유를 반환한다."""
+    """한 Argontendard TTF를 검사하고 실패 사유를 반환한다."""
     errors: list[str] = []
     try:
         font = TTFont(path)
@@ -127,7 +127,7 @@ def verify_font(path: Path) -> list[str]:
         for name_id, label in ((4, "Full"), (6, "PostScript")):
             values = _name_values(font, name_id)
             if not values or any(FAMILY_NAME not in value for value in values):
-                errors.append(f"{label} name이 Meslotendard 규칙과 다릅니다: {sorted(values)}")
+                errors.append(f"{label} name이 Argontendard 규칙과 다릅니다: {sorted(values)}")
 
         licenses = _name_values(font, 13)
         required_license_words = ("SIL Open Font License", "Apache", "MIT", "modified")
@@ -275,7 +275,7 @@ def verify_font(path: Path) -> list[str]:
 
 
 def verify_directory(font_dir: Path) -> dict[Path, list[str]]:
-    """디렉터리의 모든 Meslotendard TTF를 검사한다."""
+    """디렉터리의 모든 Argontendard TTF를 검사한다."""
     paths = sorted(font_dir.glob(f"{FAMILY_NAME}-*.ttf"))
     expected_names = {
         f"{FAMILY_NAME}-{suffix}.ttf"
@@ -298,7 +298,7 @@ def verify_reproducible(variant_name: str = "Regular") -> tuple[bool, str, str]:
     temporary_root = PROJECT_ROOT / "build"
     temporary_root.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(
-        prefix="meslotendard-repro-",
+        prefix="argontendard-repro-",
         dir=temporary_root,
     ) as temporary:
         root = Path(temporary)

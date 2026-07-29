@@ -21,15 +21,15 @@ fi
 uv sync --all-groups --frozen
 uv run ruff check .
 uv run pytest
-uv run meslotendard fetch
-uv run meslotendard build --all
-uv run meslotendard verify --reproducible
-uv run meslotendard render
+uv run argontendard fetch
+uv run argontendard build --all
+uv run argontendard verify --reproducible
+uv run argontendard render
 
 if [[ $# -gt 0 ]]; then
-  uv run meslotendard package --version "$1"
+  uv run argontendard package --version "$1"
 else
-  uv run meslotendard package
+  uv run argontendard package
 fi
 
 (
@@ -41,4 +41,4 @@ fi
   fi
 )
 
-printf '완료: fonts/ttf, assets/meslotendard-preview.png, dist/Meslotendard.zip\n'
+printf '완료: fonts/ttf, assets/argontendard-preview.png, dist/Argontendard.zip\n'

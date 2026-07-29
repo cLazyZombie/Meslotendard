@@ -1,5 +1,9 @@
+Copyright (c) 2026 The Argontendard Project Authors.
 Copyright (c) 2026 The Meslotendard Project Authors.
 Copyright (c) 2026 The Monatendard Project Authors.
+Copyright (c) 2023, GitHub (https://github.com/githubnext/monaspace),
+with Reserved Font Name "Monaspace", including subfamilies "Argon", "Neon",
+"Xenon", "Radon", and "Krypton".
 Copyright (c) 2021, Kil Hyung-jin (https://github.com/orioncactus/pretendard),
 with Reserved Font Name "Pretendard".
 Copyright 2014-2021 Adobe (http://www.adobe.com/),
@@ -10,11 +14,11 @@ with Reserved Font Name "Inter".
 Copyright 2021 The M+ FONTS Project Authors (https://github.com/coz-m/MPLUS_FONTS),
 with Reserved Font Name "M PLUS 1".
 
-Meslotendard also contains modified components from Meslo LG under the
-Apache License 2.0 and glyphs distributed by Nerd Fonts under their
-respective upstream licenses. Their copyright notices, license texts, and
-attributions are preserved in the licenses directory. The combined font is
-distributed under the terms below because it incorporates Pretendard.
+Argontendard also contains modified components from Monaspace Argon and
+Pretendard under the SIL Open Font License 1.1, plus glyphs distributed by
+Nerd Fonts under their respective upstream licenses. Their copyright notices,
+license texts, and attributions are preserved in the licenses directory. The
+combined font is distributed under the terms below.
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

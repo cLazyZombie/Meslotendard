@@ -1,4 +1,4 @@
-"""고정된 Meslotendard 원본 글꼴을 내려받고 검증·추출한다."""
+"""고정된 Argontendard 원본 글꼴을 내려받고 검증·추출한다."""
 
 from __future__ import annotations
 
@@ -14,8 +14,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 LOCK_PATH = PROJECT_ROOT / "sources.lock.toml"
 UPSTREAM_DIR = PROJECT_ROOT / "upstream"
 ARCHIVE_DIR = UPSTREAM_DIR / "_archives"
-MESLO_DIR = UPSTREAM_DIR / "meslo"
+MONASPACE_DIR = UPSTREAM_DIR / "monaspace"
 PRETENDARD_DIR = UPSTREAM_DIR / "pretendard"
+NERD_FONTS_DIR = UPSTREAM_DIR / "nerd-fonts"
+NERD_SYMBOLS_FILENAME = "SymbolsNerdFontMono-Regular.ttf"
 
 WEIGHTS = ("Regular", "Bold")
 STYLES = ("normal", "italic")
@@ -39,11 +41,11 @@ class Variant:
 
     @property
     def latin_filename(self) -> str:
-        return f"MesloLGMNerdFontMono-{self.source_suffix}.ttf"
+        return f"MonaspaceArgonFrozen-{self.source_suffix}.ttf"
 
     @property
     def upright_latin_filename(self) -> str:
-        return f"MesloLGMNerdFontMono-{self.weight_name}.ttf"
+        return f"MonaspaceArgonFrozen-{self.weight_name}.ttf"
 
     @property
     def cjk_filename(self) -> str:
@@ -51,7 +53,7 @@ class Variant:
 
 
 def make_variant(weight_name: str, style: str) -> Variant:
-    """weight/style을 Meslo 원본 및 Meslotendard 출력 이름으로 변환한다."""
+    """weight/style을 Monaspace 원본 및 Argontendard 출력 이름으로 변환한다."""
     if weight_name not in WEIGHT_TO_CSS:
         raise ValueError(f"지원하지 않는 weight입니다: {weight_name}")
     if style not in STYLES:
@@ -106,7 +108,7 @@ def download(url: str, destination: Path) -> None:
     """URL을 임시 파일로 받은 뒤 원자적으로 교체한다."""
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_suffix(destination.suffix + ".tmp")
-    request = urllib.request.Request(url, headers={"User-Agent": "Meslotendard-builder"})
+    request = urllib.request.Request(url, headers={"User-Agent": "Argontendard-builder"})
     try:
         with (
             urllib.request.urlopen(request, timeout=180) as response,
@@ -130,17 +132,19 @@ def _extract_member(archive: zipfile.ZipFile, member_name: str, destination: Pat
         shutil.copyfileobj(source, target)
 
 
-def extract_sources(meslo_archive: Path, pretendard_archive: Path) -> None:
-    """빌드에 필요한 Meslo Nerd Mono와 Pretendard TTF를 추출한다."""
-    with zipfile.ZipFile(meslo_archive) as archive:
+def extract_sources(
+    monaspace_archive: Path,
+    pretendard_archive: Path,
+    nerd_fonts_archive: Path,
+) -> None:
+    """빌드에 필요한 Argon, Pretendard, Nerd Symbols TTF를 추출한다."""
+    with zipfile.ZipFile(monaspace_archive) as archive:
         for variant in VARIANTS:
             _extract_member(
                 archive,
-                variant.latin_filename,
-                MESLO_DIR / variant.latin_filename,
+                f"Frozen Fonts/Monaspace Argon/{variant.latin_filename}",
+                MONASPACE_DIR / variant.latin_filename,
             )
-        _extract_member(archive, "LICENSE.txt", MESLO_DIR / "LICENSE.txt")
-        _extract_member(archive, "README.md", MESLO_DIR / "README.md")
 
     with zipfile.ZipFile(pretendard_archive) as archive:
         for weight in WEIGHTS:
@@ -151,17 +155,27 @@ def extract_sources(meslo_archive: Path, pretendard_archive: Path) -> None:
                 PRETENDARD_DIR / filename,
             )
 
+    with zipfile.ZipFile(nerd_fonts_archive) as archive:
+        _extract_member(
+            archive,
+            NERD_SYMBOLS_FILENAME,
+            NERD_FONTS_DIR / NERD_SYMBOLS_FILENAME,
+        )
+        _extract_member(archive, "LICENSE", NERD_FONTS_DIR / "LICENSE")
+
 
 def write_sources_note(lock: dict) -> None:
     """추출한 입력과 변환 기준을 사람이 읽을 수 있게 기록한다."""
     project = lock["project"]
-    meslo = lock["sources"]["meslo"]
+    monaspace = lock["sources"]["monaspace"]
     pretendard = lock["sources"]["pretendard"]
+    nerd_fonts = lock["sources"]["nerd_fonts"]
     lines = [
-        "# Meslotendard 빌드 입력",
+        "# Argontendard 빌드 입력",
         "",
-        f"- {meslo['name']}: {meslo['version']}",
+        f"- {monaspace['name']}: {monaspace['version']}",
         f"- Pretendard: {pretendard['version']}",
+        f"- Nerd Fonts Symbols Only: {nerd_fonts['version']}",
         f"- 영문 윤곽 가로 배율: {project['latin_horizontal_scale']:.6f}",
         f"- 영문 셀 너비: {project['latin_advance_em']:.12f}em",
         f"- 한글/CJK 가로 배율: {project['cjk_horizontal_scale']:.6f}",
@@ -180,7 +194,7 @@ def fetch_sources(lock_path: Path = LOCK_PATH) -> list[Path]:
     """잠금된 원본을 준비하고 검증한다."""
     lock = load_lock(lock_path)
     archives: list[Path] = []
-    for key in ("meslo", "pretendard"):
+    for key in ("monaspace", "pretendard", "nerd_fonts"):
         source = lock["sources"][key]
         archive_path = ARCHIVE_DIR / source["archive"]
         if archive_path.exists():
@@ -193,6 +207,6 @@ def fetch_sources(lock_path: Path = LOCK_PATH) -> list[Path]:
         verify_archive(archive_path, source["sha256"])
         archives.append(archive_path)
 
-    extract_sources(archives[0], archives[1])
+    extract_sources(archives[0], archives[1], archives[2])
     write_sources_note(lock)
     return archives

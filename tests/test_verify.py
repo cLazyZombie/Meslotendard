@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from meslotendard.builder import FAMILY_NAME
 from meslotendard.verify import (
     MINIMUM_NERD_GLYPHS,
     OPERATOR_SEQUENCES,
@@ -28,7 +29,7 @@ def test_operator_regression_set_covers_common_coding_sequences() -> None:
 
 
 def test_directory_verification_requires_exactly_four_styles(tmp_path: Path) -> None:
-    (tmp_path / "Meslotendard-Regular.ttf").write_bytes(b"not enough")
+    (tmp_path / f"{FAMILY_NAME}-Regular.ttf").write_bytes(b"not enough")
     failures = verify_directory(tmp_path)
     assert tmp_path in failures
     assert "TTF 네 종" in failures[tmp_path][0]

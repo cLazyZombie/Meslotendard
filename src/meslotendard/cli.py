@@ -1,4 +1,4 @@
-"""Meslotendard 개발자용 명령행 인터페이스."""
+"""Argontendard 개발자용 명령행 인터페이스."""
 
 from __future__ import annotations
 
@@ -25,14 +25,14 @@ def _add_variant_selection(parser: argparse.ArgumentParser) -> None:
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Meslotendard 재현 가능 글꼴 빌드")
+    parser = argparse.ArgumentParser(description="Argontendard 재현 가능 글꼴 빌드")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     subparsers.add_parser("fetch", help="고정 원본 다운로드, SHA256 검증 및 추출")
 
     build = subparsers.add_parser(
         "build",
-        help="MesloLGM Nerd Font Mono와 Pretendard 병합",
+        help="Monaspace Argon, Pretendard, Nerd 아이콘 병합",
     )
     _add_variant_selection(build)
     build.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
@@ -46,7 +46,7 @@ def _parser() -> argparse.ArgumentParser:
     render.add_argument(
         "--output",
         type=Path,
-        default=Path("assets/meslotendard-preview.png"),
+        default=Path("assets/argontendard-preview.png"),
     )
 
     package = subparsers.add_parser("package", help="GitHub Release 자산 생성")

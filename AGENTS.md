@@ -1,7 +1,8 @@
-# Meslotendard 작업 규칙
+# Argontendard 작업 규칙
 
 - 이 저장소는 `younjungpark/Monatendard`의 포크다.
-- 결과물은 `Meslotendard` 패밀리의 Regular, Bold, Italic, BoldItalic TTF 네 개뿐이다.
+- `argon` 브랜치의 결과물은 `Argontendard` 패밀리의 Regular, Bold, Italic,
+  BoldItalic TTF 네 개뿐이다.
 - 모든 결과물에 Nerd Font 아이콘을 포함한다. 일반판, 웹폰트, Windows 설치 스크립트,
   GitHub Pages 파일은 다시 추가하지 않는다.
 - 영문·Nerd·유니코드 반각 문자는 한 칸, 한글·전각 CJK는 두 칸이어야 한다.

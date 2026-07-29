@@ -1,11 +1,15 @@
-# Meslotendard 변경 기록
+# Argontendard 변경 기록
 
 이 문서는 원본 글꼴에서 변경한 내용을 기록합니다.
 
 ## 0.3.1
 
-- 영문·아이콘 원본을 작은 행간의 MesloLGS Nerd Font Mono에서 중간 행간의
-  MesloLGM Nerd Font Mono로 변경했습니다.
+- 현재 Meslotendard의 네 스타일, 한글 두 칸, Nerd 아이콘 한 칸, 재현 가능 빌드
+  구조를 기준으로 `Argontendard` 변형을 만들었습니다.
+- 영문 원본을 Monaspace Argon Frozen 1.400으로 변경했습니다.
+- Nerd Fonts Symbols Only 3.4.0 아이콘을 모든 결과 TTF에 직접 병합했습니다.
+- Monaspace의 `GSUB`, `GPOS`, `GDEF`를 비롯한 레이아웃 테이블을 제거해 코딩
+  리게이처를 비활성화했습니다.
 
 ## 0.3.0
 
@@ -22,6 +26,7 @@
 ## 원본 기여
 
 - Meslo LG: André Berg
+- Monaspace: GitHub 및 Monaspace 기여자
 - Pretendard: Kil Hyung-jin 및 Pretendard 기여자
 - Nerd Fonts: Ryan L McIntyre 및 Nerd Fonts 기여자
 - Monatendard: younjungpark 및 Monatendard 기여자

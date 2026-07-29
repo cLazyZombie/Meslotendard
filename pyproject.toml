@@ -1,7 +1,7 @@
 [project]
 name = "meslotendard"
 version = "0.3.1"
-description = "MesloLGM Nerd Font Mono와 Pretendard를 결합한 한글 코딩 글꼴 빌드 도구"
+description = "Monaspace Argon, Pretendard, Nerd 아이콘을 결합한 한글 코딩 글꼴 빌드 도구"
 readme = "README.md"
 license = "OFL-1.1"
 requires-python = ">=3.11"
@@ -15,7 +15,7 @@ dependencies = [
 Repository = "https://github.com/cLazyZombie/Meslotendard"
 
 [project.scripts]
-meslotendard = "meslotendard.cli:main"
+argontendard = "meslotendard.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.8.0,<0.9.0"]

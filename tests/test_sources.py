@@ -21,10 +21,10 @@ def test_variant_matrix_has_two_real_weights_and_two_styles() -> None:
     assert set(VARIANTS_BY_SUFFIX) == {"Regular", "Italic", "Bold", "BoldItalic"}
 
 
-def test_regular_italic_source_name_matches_meslo_archive() -> None:
+def test_regular_italic_source_name_matches_monaspace_archive() -> None:
     variant = make_variant("Regular", "italic")
-    assert variant.latin_filename == "MesloLGMNerdFontMono-Italic.ttf"
-    assert variant.upright_latin_filename == "MesloLGMNerdFontMono-Regular.ttf"
+    assert variant.latin_filename == "MonaspaceArgonFrozen-Italic.ttf"
+    assert variant.upright_latin_filename == "MonaspaceArgonFrozen-Regular.ttf"
     assert variant.cjk_filename == "Pretendard-Regular.ttf"
     assert variant.output_suffix == "Italic"
 
@@ -42,12 +42,13 @@ def test_lock_pins_sources_metrics_and_sha256() -> None:
         pyproject = tomllib.load(handle)
 
     assert lock["project"]["version"] == __version__ == pyproject["project"]["version"]
-    assert lock["project"]["family"] == "Meslotendard"
-    assert lock["project"]["latin_horizontal_scale"] == 1.0
-    assert lock["project"]["latin_advance_em"] == pytest.approx(1233 / 2048)
-    assert lock["sources"]["meslo"]["name"] == "MesloLGM Nerd Font Mono"
-    assert lock["sources"]["meslo"]["version"] == "1.21 / Nerd Fonts 3.4.0"
+    assert lock["project"]["family"] == "Argontendard"
+    assert lock["project"]["latin_horizontal_scale"] == 0.925
+    assert lock["project"]["latin_advance_em"] == 0.595
+    assert lock["sources"]["monaspace"]["name"] == "Monaspace Argon Frozen"
+    assert lock["sources"]["monaspace"]["version"] == "1.400"
     assert lock["sources"]["pretendard"]["version"] == "1.3.9"
+    assert lock["sources"]["nerd_fonts"]["version"] == "3.4.0"
     for source in lock["sources"].values():
         assert len(source["sha256"]) == 64
         int(source["sha256"], 16)

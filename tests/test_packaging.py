@@ -13,13 +13,13 @@ def test_release_package_contains_four_fonts_licenses_and_checksums(
     fonts = tmp_path / "fonts" / "ttf"
     fonts.mkdir(parents=True)
     for suffix in ("Regular", "Bold", "Italic", "BoldItalic"):
-        (fonts / f"Meslotendard-{suffix}.ttf").write_bytes(suffix.encode("ascii"))
+        (fonts / f"Argontendard-{suffix}.ttf").write_bytes(suffix.encode("ascii"))
 
     assets = create_release_assets(
         fonts_dir=tmp_path / "fonts",
         dist_dir=tmp_path / "dist",
     )
-    assert [path.name for path in assets] == ["Meslotendard.zip", "SHA256SUMS.txt"]
+    assert [path.name for path in assets] == ["Argontendard.zip", "SHA256SUMS.txt"]
 
     with zipfile.ZipFile(assets[0]) as archive:
         names = set(archive.namelist())
@@ -27,10 +27,9 @@ def test_release_package_contains_four_fonts_licenses_and_checksums(
         assert len(archive.read("SHA256SUMS.txt").decode("ascii").splitlines()) == 4
 
     for suffix in ("Regular", "Bold", "Italic", "BoldItalic"):
-        assert f"Meslotendard-{suffix}.ttf" in names
+        assert f"Argontendard-{suffix}.ttf" in names
     assert "LICENSE" in names
     assert "FONTLOG.md" in names
     assert "licenses/THIRD_PARTY_NOTICES.md" in names
-    assert "licenses/MESLO_APACHE-2.0.txt" in names
     assert "licenses/NERD_FONTS_LICENSE.txt" in names
     assert len(assets[1].read_text(encoding="ascii").splitlines()) == 1

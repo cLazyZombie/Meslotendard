@@ -21,7 +21,7 @@ def test_readme_is_short_korean_fork_documentation() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     assert "younjungpark/Monatendard" in readme
     assert "https://github.com/younjungpark/Monatendard" in readme
-    assert "Meslotendard" in readme
+    assert "Argontendard" in readme
     assert "Nerd Font" in readme
     assert "한글" in readme
     assert len(readme.splitlines()) < 160
@@ -32,7 +32,7 @@ def test_agents_file_keeps_only_project_invariants() -> None:
     agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     for required in (
         "younjungpark/Monatendard",
-        "Meslotendard",
+        "Argontendard",
         "Nerd Font",
         "한글·전각 CJK는 두 칸",
         "./build.sh",
@@ -48,7 +48,7 @@ def test_local_build_script_is_executable_and_cross_platform() -> None:
     assert script.stat().st_mode & S_IXUSR
     assert "Darwin | Linux" in contents
     assert "verify --reproducible" in contents
-    assert "meslotendard package" in contents
+    assert "argontendard package" in contents
 
 
 def test_removed_web_and_windows_surfaces_stay_removed() -> None:
@@ -75,7 +75,6 @@ def test_license_and_change_documents_are_packaged_sources() -> None:
     required = (
         ROOT / "LICENSE",
         ROOT / "FONTLOG.md",
-        ROOT / "licenses" / "MESLO_APACHE-2.0.txt",
         ROOT / "licenses" / "NERD_FONTS_LICENSE.txt",
         ROOT / "licenses" / "THIRD_PARTY_NOTICES.md",
     )
@@ -88,5 +87,5 @@ def test_release_workflow_uses_current_runtime_and_korean_notes() -> None:
         encoding="utf-8"
     )
     assert "softprops/action-gh-release@v3" in workflow
-    assert "Meslotendard `${{ github.ref_name }}` 릴리스입니다." in workflow
+    assert "Argontendard `${{ github.ref_name }}` 릴리스입니다." in workflow
     assert "generate_release_notes" not in workflow

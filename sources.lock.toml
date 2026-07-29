@@ -1,20 +1,20 @@
 [project]
 version = "0.3.1"
-family = "Meslotendard"
-latin_horizontal_scale = 1.0
-latin_advance_em = 0.60205078125
+family = "Argontendard"
+latin_horizontal_scale = 0.925
+latin_advance_em = 0.595
 cjk_horizontal_scale = 1.12
 cjk_vertical_scale = 1.08
 cjk_horizontal_offset_em = 0.0
 cjk_vertical_offset_em = 0.0
 
-[sources.meslo]
-name = "MesloLGM Nerd Font Mono"
-version = "1.21 / Nerd Fonts 3.4.0"
-archive = "Meslo-v3.4.0.zip"
-url = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/Meslo.zip"
-sha256 = "13b502ac8c2bd9d3161018064560e23cd42b175bb730780a270975265a19ad57"
-license = "Apache-2.0 plus Nerd Fonts glyph-source licenses"
+[sources.monaspace]
+name = "Monaspace Argon Frozen"
+version = "1.400"
+archive = "monaspace-frozen-v1.400.zip"
+url = "https://github.com/githubnext/monaspace/releases/download/v1.400/monaspace-frozen-v1.400.zip"
+sha256 = "f4a846421d1d6bb1233e5cb748d2afb85c7111b3da994a200504eaffd97a3a05"
+license = "SIL Open Font License 1.1"
 
 [sources.pretendard]
 name = "Pretendard"
@@ -23,3 +23,11 @@ archive = "Pretendard-1.3.9.zip"
 url = "https://github.com/orioncactus/pretendard/releases/download/v1.3.9/Pretendard-1.3.9.zip"
 sha256 = "04be351a74d6bf7d60c480a3087e51d185485d35a52023142af1df19eb8c428a"
 license = "SIL Open Font License 1.1"
+
+[sources.nerd_fonts]
+name = "Nerd Fonts Symbols Only"
+version = "3.4.0"
+archive = "NerdFontsSymbolsOnly-v3.4.0.zip"
+url = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/NerdFontsSymbolsOnly.zip"
+sha256 = "8e617904b980fe3648a4b116808788fe50c99d2d495376cb7c0badbd8a564c47"
+license = "MIT plus bundled glyph-source licenses"

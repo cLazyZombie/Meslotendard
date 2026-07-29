@@ -1,4 +1,4 @@
-"""검증된 Meslotendard TTF를 재현 가능한 Release 자산으로 묶는다."""
+"""검증된 Argontendard TTF를 재현 가능한 Release 자산으로 묶는다."""
 
 from __future__ import annotations
 
@@ -75,7 +75,7 @@ def create_release_assets(
     temporary_root.mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory(
-        prefix="meslotendard-package-",
+        prefix="argontendard-package-",
         dir=temporary_root,
     ) as temporary:
         package_root = Path(temporary)

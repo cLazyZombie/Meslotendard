@@ -73,7 +73,7 @@ def _draw_style_specimen(
 
 def render_specimen(
     font_dir: Path = Path("fonts/ttf"),
-    output_path: Path = Path("assets/meslotendard-preview.png"),
+    output_path: Path = Path("assets/argontendard-preview.png"),
 ) -> Path:
     """네 스타일을 같은 1:2 격자에 그린 PNG를 생성한다."""
     font_paths = [
@@ -94,7 +94,7 @@ def render_specimen(
     )
     draw.text(
         (36, 20),
-        "Meslotendard 실제 TTF 렌더링 · 세로선 한 칸은 영문 1자, 두 칸은 한글 1자",
+        "Argontendard 실제 TTF 렌더링 · 세로선 한 칸은 영문 1자, 두 칸은 한글 1자",
         font=title_font,
         fill=(20, 24, 32),
     )

@@ -5,6 +5,7 @@ import pytest
 from meslotendard.builder import (
     _fit_cjk_transform_xy,
     _fit_latin_metrics,
+    _fit_symbol_transform,
     is_cell_connecting,
     is_cjk,
     is_double_cell,
@@ -85,3 +86,17 @@ def test_connecting_outline_keeps_source_overlap_at_target_cell_edges() -> None:
     assert target_advance == 1190
     assert transformed_xmin < 0
     assert transformed_xmax > target_advance
+
+
+def test_powerline_symbol_is_scaled_to_both_cell_edges() -> None:
+    scale_x, scale_y, shift_x = _fit_symbol_transform(
+        (100, -200, 1900, 1800),
+        normalized_scale=1.0,
+        target_advance=1190,
+        safe_ymin=-500,
+        safe_ymax=1600,
+        connect_cell_edges=True,
+    )
+    assert 100 * scale_x + shift_x == pytest.approx(0)
+    assert 1900 * scale_x + shift_x == pytest.approx(1190)
+    assert scale_y == pytest.approx(1600 / 1800)

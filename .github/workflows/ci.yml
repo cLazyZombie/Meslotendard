@@ -21,10 +21,10 @@ jobs:
       - name: 빌드 결과 보관
         uses: actions/upload-artifact@v7
         with:
-          name: Meslotendard-${{ github.sha }}
+          name: Argontendard-${{ github.sha }}
           path: |
-            dist/Meslotendard.zip
+            dist/Argontendard.zip
             dist/SHA256SUMS.txt
-            assets/meslotendard-preview.png
+            assets/argontendard-preview.png
           retention-days: 14
           if-no-files-found: error
